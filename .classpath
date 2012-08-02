@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/amqp-client-2.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.1.jar"/>
+	<classpathentry kind="lib" path="lib/httpcore-4.1.jar"/>
+	<classpathentry kind="lib" path="lib/rest-api-schemas-1.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/vcloud-java-sdk-1.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar" sourcepath="lib/commons-cli-1.2-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/vcloud-client/lib/commons-cli-1.2-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
