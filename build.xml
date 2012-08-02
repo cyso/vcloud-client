@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<project name="vcloud-client" basedir="." default="executable"> 
+
+	<!-- Set up properties containing important project directories --> 
+	<property name="source.root" value="${basedir}/src"/>
+	<property name="class.root" value="${basedir}/classes"/>
+	<property name="dist.dir" value="${basedir}/dist"/>
+	<property name="libs.dir" value="${basedir}/lib"/>
+	<property name="root.package" value="nl.cyso.vcloud.client"/>
+	<property name="entry.point" value="Entry"/>
+	<property name="executable" value="vcloud-client"/>
+
+	<path id="libraries">
+		<!-- Include our own classes, of course -->
+		<pathelement location="${class.root}"/> 
+		<fileset dir="${libs.dir}">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	
+	<pathconvert property="project.class.path" pathsep=":">
+		<path refid="libraries"/>
+		<map from="${basedir}" to="."/>
+	</pathconvert>
+	
+	<target name="print-classpath" description="Show the dependency class path">
+		<property name="relpath" value="${project.class.path}" relative="yes" basedir="${basedir}"/>
+		<echo>${relpath}</echo>
+	</target>
+
+	<!-- Create our runtime subdirectories and copy resources into them -->
+	<target name="prepare" description="Sets up build structures">
+		<delete dir="${class.root}"/>
+		<mkdir dir="${class.root}"/>
+		
+		<!-- Copy our property files and O/R mappings for use at runtime -->
+		<copy todir="${class.root}" >
+			<fileset dir="${source.root}" >
+				<include name="**/*.properties"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Compile the java source of the project -->
+	<target name="compile" depends="prepare" description="Compiles all Java classes">
+		<javac srcdir="${source.root}"
+		       destdir="${class.root}"
+		       debug="on"
+		       optimize="off"
+		       deprecation="on"
+		       includeantruntime="false"
+			   classpath="${project.class.path}"
+		/>
+	</target>
+	
+	<!-- Create an easy to use bash file -->
+	<target name="executable" depends="compile" description="Create an easy to use bash file">
+		<echo file="${executable}" append="false">#!/bin/sh
+java -classpath ${project.class.path} ${root.package}.${entry.point} $$*</echo>
+		<chmod file="${executable}" perm="a+x"/>
+	</target>
+	
+	<!-- Create a clean dist directory -->
+	<target name="dist" depends="executable" description="Create a clean dist directory">
+		<delete dir="${dist.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${dist.dir}/${class.root}"/>
+		<mkdir dir="${dist.dir}/${libs.dir}"/>
+
+		<copy todir="${dist.dir}">
+			<fileset dir=".">
+				<include name="${executable}"/>
+			</fileset>
+		</copy>
+		<copy todir="${dist.dir}/${class.root}">
+			<fileset dir="${class.root}">
+				<include name="**/*.class"/>
+			</fileset>
+		</copy>
+		<copy todir="${dist.dir}/${libs.dir}">
+			<fileset dir="${libs.dir}">
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+		
+		<chmod file="${dist.dir}/${executable}" perm="a+x"/>
+	</target>
+</project>
