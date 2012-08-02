@@ -1,10 +1,14 @@
 package nl.cyso.vcloud.client;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
+import com.vmware.vcloud.sdk.Catalog;
+import com.vmware.vcloud.sdk.CatalogItem;
 import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.VCloudException;
 import com.vmware.vcloud.sdk.Vapp;
@@ -120,12 +124,69 @@ public class vCloudClient {
 		}
 	}
 
+	public void listCatalogs(String org) {
+		this.vccPreCheck();
+
+		Organization orgObj = this.getOrganization(org);
+
+		try {
+			System.out.println("Catalogs:\n");
+			for (ReferenceType catalogRef : orgObj.getCatalogRefs()) {
+				Catalog catalog = Catalog.getCatalogByReference(this.vcc, catalogRef);
+				System.out.println(String.format("----\n%-20s - %s", catalogRef.getName(), catalog.getResource().getDescription()));
+
+				List<CatalogItem> vapps = new ArrayList<CatalogItem>();
+				List<CatalogItem> media = new ArrayList<CatalogItem>();
+				for (ReferenceType itemRef : catalog.getCatalogItemReferences()) {
+					CatalogItem item = CatalogItem.getCatalogItemByReference(this.vcc, itemRef);
+					ReferenceType ref = item.getEntityReference();
+
+					if (ref.getType().equals(vCloudConstants.MediaType.VAPP_TEMPLATE)) {
+						vapps.add(item);
+					} else if (ref.getType().equals(vCloudConstants.MediaType.MEDIA)) {
+						media.add(item);
+					}
+				}
+
+				System.out.println("\tvApps:");
+				for (CatalogItem item : vapps) {
+					System.out.println(String.format("\t\t%-20s - %s", item.getReference().getName(), item.getResource().getDescription().replace("\n", ", ")));
+				}
+				System.out.println("\tvMedia:");
+				for (CatalogItem item : media) {
+					System.out.println(String.format("\t\t%-20s - %s", item.getReference().getName(), item.getResource().getDescription().replace("\n", ", ")));
+				}
+			}
+		} catch (VCloudException e) {
+			System.err.println("An error occured while retrieving Catalogs");
+			System.exit(1);
+		}
+	}
+
+	private Organization getOrganization(String org) {
+		this.vccPreCheck();
+
+		Organization orgObj = null;
+		try {
+			ReferenceType orgRef = this.vcc.getOrgRefByName(org);
+			orgObj = Organization.getOrganizationByReference(this.vcc, orgRef);
+		} catch (VCloudException e) {
+			System.err.println("An error occured while selecting the organization");
+			System.exit(1);
+		} catch (NullPointerException ne) {
+			System.err.println("Organization does not exist");
+			System.exit(1);
+		}
+
+		return orgObj;
+	}
+
 	private Vdc getVDC(String org, String name) {
 		this.vccPreCheck();
 
 		Vdc vdcObj = null;
 		try {
-			Organization o = Organization.getOrganizationByReference(this.vcc, this.vcc.getOrgRefByName(org));
+			Organization o = this.getOrganization(org);
 			ReferenceType vdcRef = o.getVdcRefByName(name);
 			vdcObj = Vdc.getVdcByReference(this.vcc, vdcRef);
 		} catch (VCloudException e) {

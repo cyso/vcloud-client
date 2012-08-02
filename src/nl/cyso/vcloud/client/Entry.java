@@ -74,6 +74,12 @@ public class Entry {
 				}
 				client.listVDCs(cli.getOptionValue("org"));
 				break;
+			case CATALOG:
+				if (!cli.hasOption("org")) {
+					usageError("An organization must also be specified when listing Catalogs", opt);
+				}
+				client.listCatalogs(cli.getOptionValue("org"));
+				break;
 			case VAPP:
 				if (!cli.hasOption("org")) {
 					usageError("An organization must also be specified when listing vApps", opt);
