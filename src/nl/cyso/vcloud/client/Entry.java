@@ -2,6 +2,7 @@ package nl.cyso.vcloud.client;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -39,6 +40,9 @@ public class Entry {
 		CommandLine cli = null;
 		try {
 			cli = new PosixParser().parse(opt, args);
+		} catch (MissingArgumentException me) {
+			usageError(me.getLocalizedMessage(), opt);
+			System.exit(-1);
 		} catch (ParseException e) {
 			e.printStackTrace();
 			System.exit(-1);
