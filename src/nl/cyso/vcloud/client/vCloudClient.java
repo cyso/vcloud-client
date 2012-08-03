@@ -291,8 +291,6 @@ public class vCloudClient {
 	public void recomposeVApp(String org, String vdc, String vapp, String catalog, String template, String fqdn, String description, String ip, String network) {
 		this.vccPreCheck();
 
-		Organization orgObj = this.getOrganization(org);
-		Vdc vdcObj = this.getVDC(org, vdc);
 		Vapp vappObj = this.getVApp(org, vdc, vapp);
 		CatalogItem itemObj = this.getCatalogItem(org, catalog, template, vCloudConstants.MediaType.VAPP_TEMPLATE);
 		VappTemplate templateObj = null;
