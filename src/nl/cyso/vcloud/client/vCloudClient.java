@@ -10,16 +10,19 @@ import javax.xml.bind.JAXBElement;
 
 import com.vmware.vcloud.api.rest.schema.GuestCustomizationSectionType;
 import com.vmware.vcloud.api.rest.schema.InstantiationParamsType;
+import com.vmware.vcloud.api.rest.schema.IpRangeType;
 import com.vmware.vcloud.api.rest.schema.NetworkConnectionSectionType;
 import com.vmware.vcloud.api.rest.schema.NetworkConnectionType;
 import com.vmware.vcloud.api.rest.schema.ObjectFactory;
 import com.vmware.vcloud.api.rest.schema.RecomposeVAppParamsType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.SourcedCompositionItemParamType;
+import com.vmware.vcloud.api.rest.schema.VAppNetworkConfigurationType;
 import com.vmware.vcloud.api.rest.schema.ovf.MsgType;
 import com.vmware.vcloud.api.rest.schema.ovf.SectionType;
 import com.vmware.vcloud.sdk.Catalog;
 import com.vmware.vcloud.sdk.CatalogItem;
+import com.vmware.vcloud.sdk.OrgNetwork;
 import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.VCloudException;
 import com.vmware.vcloud.sdk.Vapp;
@@ -94,6 +97,22 @@ public class vCloudClient {
 			for (ReferenceType vdcRef : Organization.getOrganizationByReference(this.vcc, orgRef).getVdcRefs()) {
 				Vdc vdc = Vdc.getVdcByReference(this.vcc, vdcRef);
 				System.out.println(String.format("%-20s - %s", vdcRef.getName(), vdc.getResource().getDescription()));
+
+				for (ReferenceType netRef : vdc.getAvailableNetworkRefs()) {
+					OrgNetwork net = OrgNetwork.getOrgNetworkByReference(this.vcc, netRef);
+
+					StringBuilder i = new StringBuilder();
+					try {
+						List<IpRangeType> ips = net.getResource().getConfiguration().getIpScope().getIpRanges().getIpRange();
+						for (IpRangeType ip : ips) {
+							i.append(String.format(" %s - %s ", ip.getStartAddress(), ip.getEndAddress()));
+						}
+					} catch (NullPointerException e) {
+						i.append("?");
+					}
+
+					System.out.println(String.format("\t%-10s (%s)", net.getResource().getName(), i.toString()));
+				}
 			}
 		} catch (VCloudException e) {
 			System.err.println("An error occured while retrieving virtual data centers");
@@ -111,6 +130,21 @@ public class vCloudClient {
 			for (ReferenceType vappRef : vdcObj.getVappRefs()) {
 				Vapp vapp = Vapp.getVappByReference(this.vcc, vappRef);
 				System.out.println(String.format("%-20s - %s", vappRef.getName(), vapp.getResource().getDescription()));
+
+				for (VAppNetworkConfigurationType vn : vapp.getVappNetworkConfigurations()) {
+					StringBuilder i = new StringBuilder();
+
+					try {
+						List<IpRangeType> vips = vn.getConfiguration().getIpScope().getIpRanges().getIpRange();
+
+						for (IpRangeType ip : vips) {
+							i.append(String.format(" %s - %s ", ip.getStartAddress(), ip.getEndAddress()));
+						}
+					} catch (NullPointerException e) {
+						i.append("?");
+					}
+					System.out.println(String.format("\t%-10s (%s)", vn.getNetworkName(), i.toString()));
+				}
 			}
 		} catch (VCloudException e) {
 			System.err.println("An error occured while retrieving vApps");
@@ -255,7 +289,6 @@ public class vCloudClient {
 		CatalogItem itemObj = null;
 		try {
 			itemObj = CatalogItem.getCatalogItemByReference(this.vcc, cat.getCatalogItemRefByName(item));
-			String t = itemObj.getEntityReference().getType();
 
 			if (!itemObj.getEntityReference().getType().equals(type)) {
 				System.err.println("Catalog item was found, but was not of the requested type");
