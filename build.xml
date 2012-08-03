@@ -56,8 +56,11 @@
 	<!-- Create an easy to use bash file -->
 	<target name="executable" depends="compile" description="Create an easy to use bash file">
 		<echo file="${executable}" append="false">#!/bin/sh
-java -classpath ${project.class.path} ${root.package}.${entry.point} $$*</echo>
+java -classpath ${project.class.path} ${root.package}.${entry.point} "$$@"</echo>
+		<echo file="${executable}-debug" append="false">#!/bin/sh
+java -Xdebug -Xrunjdwp:transport=dt_socket,address=8998,server=y -classpath ${project.class.path} ${root.package}.${entry.point} "$$@"</echo>
 		<chmod file="${executable}" perm="a+x"/>
+		<chmod file="${executable}-debug" perm="a+x"/>
 	</target>
 	
 	<!-- Create a clean dist directory -->
@@ -70,6 +73,7 @@ java -classpath ${project.class.path} ${root.package}.${entry.point} $$*</echo>
 		<copy todir="${dist.dir}">
 			<fileset dir=".">
 				<include name="${executable}"/>
+				<include name="${executable}-debug"/>
 			</fileset>
 		</copy>
 		<copy todir="${dist.dir}/${class.root}">
@@ -84,5 +88,6 @@ java -classpath ${project.class.path} ${root.package}.${entry.point} $$*</echo>
 		</copy>
 		
 		<chmod file="${dist.dir}/${executable}" perm="a+x"/>
+		<chmod file="${dist.dir}/${executable}-debug" perm="a+x"/>
 	</target>
 </project>
