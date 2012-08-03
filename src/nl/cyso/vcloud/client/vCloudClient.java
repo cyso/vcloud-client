@@ -6,7 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.xml.bind.JAXBElement;
+
+import com.vmware.vcloud.api.rest.schema.GuestCustomizationSectionType;
+import com.vmware.vcloud.api.rest.schema.InstantiationParamsType;
+import com.vmware.vcloud.api.rest.schema.NetworkConnectionSectionType;
+import com.vmware.vcloud.api.rest.schema.NetworkConnectionType;
+import com.vmware.vcloud.api.rest.schema.ObjectFactory;
+import com.vmware.vcloud.api.rest.schema.RecomposeVAppParamsType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
+import com.vmware.vcloud.api.rest.schema.SourcedCompositionItemParamType;
+import com.vmware.vcloud.api.rest.schema.ovf.MsgType;
+import com.vmware.vcloud.api.rest.schema.ovf.SectionType;
 import com.vmware.vcloud.sdk.Catalog;
 import com.vmware.vcloud.sdk.CatalogItem;
 import com.vmware.vcloud.sdk.Organization;
@@ -181,13 +192,13 @@ public class vCloudClient {
 		return orgObj;
 	}
 
-	private Vdc getVDC(String org, String name) {
+	private Vdc getVDC(String org, String vdc) {
 		this.vccPreCheck();
 
 		Vdc vdcObj = null;
 		try {
 			Organization o = this.getOrganization(org);
-			ReferenceType vdcRef = o.getVdcRefByName(name);
+			ReferenceType vdcRef = o.getVdcRefByName(vdc);
 			vdcObj = Vdc.getVdcByReference(this.vcc, vdcRef);
 		} catch (VCloudException e) {
 			System.err.println("An error occured while selecting the virtual data center");
@@ -198,5 +209,137 @@ public class vCloudClient {
 		}
 
 		return vdcObj;
+	}
+
+	private Vapp getVApp(String org, String vdc, String vapp) {
+		this.vccPreCheck();
+
+		Vapp vappObj = null;
+		try {
+			Vdc vdcObj = this.getVDC(org, vdc);
+
+			vappObj = Vapp.getVappByReference(this.vcc, vdcObj.getVappRefByName(vapp));
+		} catch (VCloudException e) {
+			System.err.println("An error occured while retrieving vApp");
+			System.exit(1);
+		} catch (NullPointerException ne) {
+			System.err.println("vApp does not exist");
+			System.exit(1);
+		}
+
+		return vappObj;
+	}
+
+	private CatalogItem getCatalogItem(String org, String catalog, String item, String type) {
+		this.vccPreCheck();
+
+		Catalog cat = null;
+		try {
+			Organization orgObj = this.getOrganization(org);
+
+			for (ReferenceType catalogRef : orgObj.getCatalogRefs()) {
+				if (catalogRef.getName().equals(catalog)) {
+					cat = Catalog.getCatalogByReference(this.vcc, catalogRef);
+				}
+			}
+		} catch (VCloudException e) {
+			System.err.println("An error occured while retrieving Catalog");
+			System.exit(1);
+		}
+
+		if (cat == null) {
+			System.err.println("Catalog not found");
+			System.exit(1);
+		}
+
+		CatalogItem itemObj = null;
+		try {
+			itemObj = CatalogItem.getCatalogItemByReference(this.vcc, cat.getCatalogItemRefByName(item));
+			String t = itemObj.getEntityReference().getType();
+
+			if (!itemObj.getEntityReference().getType().equals(type)) {
+				System.err.println("Catalog item was found, but was not of the requested type");
+				System.exit(1);
+			}
+		} catch (VCloudException e) {
+			System.err.println("An error occured while retrieving vApp");
+			System.exit(1);
+		} catch (NullPointerException ne) {
+			System.err.println("Catalog item not found");
+			System.exit(1);
+		}
+
+		return itemObj;
+	}
+
+	public void recomposeVApp(String org, String vdc, String vapp, String catalog, String template, String fqdn, String description, String ip, String network) {
+		this.vccPreCheck();
+
+		Organization orgObj = this.getOrganization(org);
+		Vdc vdcObj = this.getVDC(org, vdc);
+		Vapp vappObj = this.getVApp(org, vdc, vapp);
+		CatalogItem itemObj = this.getCatalogItem(org, catalog, template, vCloudConstants.MediaType.VAPP_TEMPLATE);
+		VappTemplate templateObj = null;
+		VappTemplate vmObj = null;
+		try {
+			templateObj = VappTemplate.getVappTemplateByReference(this.vcc, itemObj.getEntityReference());
+			for (VappTemplate child : templateObj.getChildren()) {
+				if (child.isVm()) {
+					vmObj = child;
+				}
+			}
+		} catch (VCloudException e) {
+			System.err.println("Unexpected error");
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		if (vmObj == null) {
+			System.err.println("Could not find VM in specified vApp");
+			System.exit(1);
+		}
+
+		// Change vApp settings
+		RecomposeVAppParamsType recomp = new RecomposeVAppParamsType();
+		recomp.setName(vappObj.getReference().getName());
+		List<SourcedCompositionItemParamType> sources = recomp.getSourcedItem();
+
+		// Change new VM network settings
+		NetworkConnectionType nw = new NetworkConnectionType();
+		nw.setIpAddress(ip);
+		nw.setMACAddress(null);
+		nw.setIpAddressAllocationMode("MANUAL");
+		nw.setNetwork(network);
+		nw.setIsConnected(true);
+
+		NetworkConnectionSectionType networkObject = new NetworkConnectionSectionType();
+		networkObject.setInfo(new MsgType());
+		networkObject.getNetworkConnection().add(nw);
+
+		InstantiationParamsType instant = new InstantiationParamsType();
+		List<JAXBElement<? extends SectionType>> sections = instant.getSection();
+		sections.add(new ObjectFactory().createNetworkConnectionSection(networkObject));
+
+		String[] fqdnParts = fqdn.split("\\.");
+
+		GuestCustomizationSectionType guest = new GuestCustomizationSectionType();
+		guest.setInfo(new MsgType());
+		guest.setComputerName(fqdnParts[0]);
+		sections.add(new ObjectFactory().createGuestCustomizationSection(guest));
+
+		// Whip it all up
+		SourcedCompositionItemParamType s = new SourcedCompositionItemParamType();
+		s.setSource(vmObj.getReference());
+		s.getSource().setName(fqdn);
+		s.setSourceDelete(false);
+		s.setInstantiationParams(instant);
+		sources.add(s);
+
+		// Do it
+		try {
+			vappObj.recomposeVapp(recomp);
+		} catch (VCloudException e) {
+			e.printStackTrace();
+		}
 	}
 }
