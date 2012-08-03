@@ -28,7 +28,7 @@ public class Entry {
 
 		// Modes
 		opt.addOption("h", "help", false, "Show help");
-		opt.addOption("l", "list", true, "List vCloud objects (org|vdc|vapp|vapptemplate|catalog|vm)");
+		opt.addOption("l", "list", true, "List vCloud objects (org|vdc|vapp|catalog|vm)");
 		opt.addOption("a", "add-vm", false, "Add a new VM from a vApp Template to an existing vApp");
 
 		// Selectors
@@ -101,15 +101,6 @@ public class Entry {
 				}
 				client.listVApps(cli.getOptionValue("org"), cli.getOptionValue("vdc"));
 				break;
-			case VAPPTEMPLATE:
-				if (!cli.hasOption("org")) {
-					usageError("An organization must also be specified when listing vApps", opt);
-				}
-				if (!cli.hasOption("vdc")) {
-					usageError("A VDC must also be specified when listing vApps", opt);
-				}
-				client.listVAppTemplates(cli.getOptionValue("org"), cli.getOptionValue("vdc"));
-				break;
 			default:
 				System.err.println("Not yet implemented");
 				break;
@@ -145,5 +136,8 @@ public class Entry {
 
 			client.recomposeVApp(cli.getOptionValue("org"), cli.getOptionValue("vdc"), cli.getOptionValue("vapp"), cli.getOptionValue("catalog"), cli.getOptionValue("template"), cli.getOptionValue("fqdn"), cli.getOptionValue("description"), cli.getOptionValue("ip"), cli.getOptionValue("network"));
 		}
+
+		// Something went wrong if we got here
+		System.exit(-1);
 	}
 }

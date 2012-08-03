@@ -152,23 +152,6 @@ public class vCloudClient {
 		}
 	}
 
-	public void listVAppTemplates(String org, String vdc) {
-		this.vccPreCheck();
-
-		Vdc vdcObj = this.getVDC(org, vdc);
-
-		try {
-			System.out.println("vApp Templates:\n");
-			for (ReferenceType vappTemplateRef : vdcObj.getVappTemplateRefs()) {
-				VappTemplate vappTemplate = VappTemplate.getVappTemplateByReference(this.vcc, vappTemplateRef);
-				System.out.println(String.format("----\nName: %s\n\n%s\n----\n", vappTemplateRef.getName(), vappTemplate.getResource().getDescription()));
-			}
-		} catch (VCloudException e) {
-			System.err.println("An error occured while retrieving vApp Templates");
-			System.exit(1);
-		}
-	}
-
 	public void listCatalogs(String org) {
 		this.vccPreCheck();
 
