@@ -21,6 +21,9 @@ public class Entry {
 	public static void main(String[] args) {
 		Options opt = new Options();
 
+		// Configuration file
+		opt.addOption("c", "config", true, "Use this configuration file");
+
 		// Connection options
 		opt.addOption("u", "username", true, "vCloud Director username");
 		opt.addOption("p", "password", true, "vCloud Director password");
@@ -54,6 +57,10 @@ public class Entry {
 		} catch (ParseException e) {
 			e.printStackTrace();
 			System.exit(-1);
+		}
+
+		if (cli.hasOption("config")) {
+			Configuration.loadFile(cli.getOptionValue("config"));
 		}
 
 		Configuration.load(cli);

@@ -3,10 +3,13 @@ package nl.cyso.vcloud.client;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 
 public class Configuration {
 	/**
@@ -246,6 +249,38 @@ public class Configuration {
 				} else {
 					Configuration.set(opt.getLongOpt(), cli.getOptionValue(opt.getLongOpt()));
 				}
+			}
+		}
+	}
+
+	public static void loadFile(String filename) {
+		org.apache.commons.configuration.Configuration conf = null;
+		try {
+			conf = new PropertiesConfiguration(filename);
+		} catch (ConfigurationException e) {
+			System.err.println("Failed to load configuration file");
+			System.err.println(e.getLocalizedMessage());
+		}
+
+		Iterator<String> i = conf.getKeys();
+		while (i.hasNext()) {
+			String key = i.next();
+
+			if (key.equals("help")) {
+				Configuration.setMode(ModeType.HELP);
+			} else if (key.equals("list")) {
+				Configuration.setMode(ModeType.LIST);
+				Configuration.setListType(ListType.valueOf(conf.getString(key).toUpperCase()));
+			} else if (key.equals("add-vm")) {
+				Configuration.setMode(ModeType.ADDVM);
+			} else if (key.equals("ip")) {
+				try {
+					Configuration.setIp(conf.getString(key));
+				} catch (UnknownHostException uhe) {
+					Configuration.setIp((InetAddress) null);
+				}
+			} else {
+				Configuration.set(key, conf.getString(key));
 			}
 		}
 	}

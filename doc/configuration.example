@@ -1,0 +1,27 @@
+## vCloud user credentials
+# vCloud Username
+#username=
+# vCloud Password
+#password=
+# vCloud Server URI
+#server=
+
+## Mode selectors, use only one at a time
+# Always show help
+#help=
+# List mode (use: org,vapp,vm,catalog)
+#list=
+# Add VM mode
+#addvm=
+
+## Selectors
+# Select this Organization
+#organization=
+# Select this virtual data center
+#vdc=
+# Select this vApp
+#vapp=
+# Select this Catalog
+#catalog=
+# Select this vApp Template
+#template=
