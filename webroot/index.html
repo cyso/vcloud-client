@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Console launcher</title>
+
+        <link href="libs/jquery-ui/jquery-ui-1.8.13.custom.css" rel="stylesheet" type="text/css" />
+        <link href="css/jquery-custom.css" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+            .probe {
+                height: 1px;
+                width: 1px;
+            }
+        </style>
+
+        <script type="text/javascript" src="libs/jquery/jquery-1.6.1.min.js"></script>
+        <script type="text/javascript" src="libs/jquery-ui/jquery-ui-1.8.13.custom.min.js"></script>
+        <script type="text/javascript" src="js/core.js"></script>
+        <script type="text/javascript" src="js/debug.js"></script>
+        <script type="text/javascript" src="js/constants.js"></script>
+        <script type="text/javascript" src="js/alert.js"></script>
+        <script type="text/javascript" src="js/installer.js"></script>
+        <script type="text/javascript">
+            var launchPopout = function (ticketURI) {
+                var encodedTicketURI = encodeURIComponent(ticketURI);
+                var urlToOpen = "console.html?{0}".format(encodedTicketURI);
+
+                window.open(urlToOpen);
+            };
+
+            var handleFormSubmit = function () {
+                var ticketURI = $('#ticket').val();
+
+                launchPopout(ticketURI);
+            };
+        </script>
+        <script type="text/javascript">
+            $(function() {
+                // This should point to the directory of a cell (or CDN) which contains the VMRC installers
+                vmware.installer.installVmrcIfNeeded('http://example.com/cloud/vmrc/');
+            });
+        </script>
+    </head>
+    <body>
+        <label for="ticket">Ticket:</label> <input type="text" id="ticket" name="ticket" />
+        <button onclick="handleFormSubmit()">Launch Popout</button>
+        <!-- normally, this would be done programmatically, but this example avoids assumptions about backend technology choices -->
+    </body>
+</html>

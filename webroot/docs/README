@@ -1,0 +1,82 @@
+README
+======
+
+This package serves as a reference implementation of a VMRC API
+client. Its purpose is to demonstrate proper usage of the API methods
+described in the "Using the VMRC API" Technical Note and provide
+example code which simplifies the process of working with the VMRC API
+in the context of vCloud Director 1.5. 
+
+Included Files
+--------------
+................................................................................
+.
+|-- css                           - Stylesheets
+|   |-- console.css                 - A stylesheet for the example console page
+|   `-- jquery-custom.css           - A stylesheet which overrides jQuery defaults
+|-- docs                          - Documentation
+|   |-- README                      - This README (plain text)
+|   |-- README.html                 - This README (HTML)
+|   |-- vmrc-api-doc                - The VMRC API documentation (plain text)
+|   `-- vmrc-api-doc.html           - The VMRC API documentation (HTML)
+|-- images                        - Images used on the example console page
+|   `-- ...
+|-- js                            - JavaScript files used by the example pages
+|   |-- alert.js                    - Displays alerts.
+|   |-- button-manager.js           - Allows for management of image-based buttons.
+|   |-- button.js                   - Represents a multi-state image-based button.
+|   |-- confirm.js                  - Displays confirmation messages.
+|   |-- console.js                  - Thinly wraps the plugin object.
+|   |-- constants.js                - Defines constants used by other files.
+|   |-- core.js                     - Defines key methods used by other files.
+|   |-- debug.js                    - Provides a logging framework.
+|   |-- event-manager.js            - Adds eventing-related methods to objects.
+|   |-- installer.js                - Provides useful installation-related methods.
+|   |-- normalize-constants.js      - Operates on a plugin object to expose constants consistently.
+|   |-- parse-ticket.js             - Parses a ticket retrieved from the vCD API into the pieces used by the VMRC API.
+|   `-- vcd-console.js              - Abstracts the plugin, creating buttons and exposing an interface which takes the string returned from the vCD API.
+|-- libs                          - External libraries
+|   |-- jquery                      - jQuery, retrieved from http://jquery.com/, MIT License
+|   |   `-- ...                    
+|   `-- jquery-ui                   - jQuery UI, retrieved from http://jqueryui.com/, MIT License
+|       `-- ...
+|-- console.html                  - The example console page
+`-- index.html                    - The example console launching page
+................................................................................
+
+Getting Started
+---------------
+
+0. If you do not have the VMRC Plugin installed, edit the line of
++index.html+ file which points to +example.com+ to reference the
+vCD instance you wish to work with.
+
+1. Open +index.html+ in a supported web browser.
+
+2. Retrieve a screen ticket using the +acquireTicket+ vCD API call
+on the VM you wish to connect to.
+
+3. Enter the value of the screen ticket (which is of the form
++mks://hostname/moid?ticket=value+) into the form on +index.html+
+and submit the form.
+
+4. Wait for the popout console to load.
+
+.Note
+*****************************************************************
+To integrate with the VMRC API, one would automate the process of
+retrieving and passing the ticket, but that exact process would
+depend on the technology being used for the backend of the portal
+and is therefore omitted from this reference implementation.
+*****************************************************************
+
+Adapting the Reference Implementation
+-------------------------------------
+
+While it is expected that many components used in this reference
+implementation could be reused without significant modification,
++vcd-console.js+ serves as an example of how to build a console
+similar to the one present in vCD itself (including placeholders
+for power state management buttons). To match the look and feel
+of the portal that console functionality is being added to, the
++vcd-console.js+ file would need to be modified.

@@ -1,0 +1,1202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.4.4" />
+<title>VMRC API SPECIFICATION</title>
+<style type="text/css">
+/* Debug borders */
+p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
+/*
+  border: 1px solid red;
+*/
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+tt {
+  color: navy;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  font-family: sans-serif;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+
+div.sectionbody {
+  font-family: serif;
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+span#author {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+span#email {
+}
+span#revision {
+  font-family: sans-serif;
+}
+
+div#footer {
+  font-family: sans-serif;
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+div#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+div#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+div#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.5em;
+  margin-bottom: 2.5em;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock {
+  padding-left: 2.0em;
+  margin-right: 10%;
+}
+div.verseblock > div.content {
+  white-space: pre;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 2px solid silver;
+}
+
+div.exampleblock > div.content {
+  border-left: 2px solid silver;
+  padding: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+div.imageblock img { border: 1px solid silver; }
+span.image img { border-style: none; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+@media print {
+  div#footer-badges { display: none; }
+}
+
+div#toctitle {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+/* Workarounds for IE6's broken and incomplete CSS2. */
+
+div.sidebar-content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+div.sidebar-title, div.image-title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  margin-top: 0.0em;
+  margin-bottom: 0.5em;
+}
+
+div.listingblock div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock-attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock-content {
+  white-space: pre;
+}
+div.verseblock-attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+
+div.exampleblock-content {
+  border-left: 2px solid silver;
+  padding-left: 0.5em;
+}
+
+/* IE6 sets dynamically generated links as visited. */
+div#toc a:visited { color: blue; }
+</style>
+</head>
+<body>
+<div id="header">
+<h1>VMRC API SPECIFICATION</h1>
+</div>
+<h2 id="_background">Background</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>This file provides a detailed description of the methods, parameters and
+properties of the VMRC API implemented by vCloud Director 1.5.</p></div>
+</div>
+<h2 id="_constants">Constants</h2>
+<div class="sectionbody">
+<h3 id="_tt_mimetype_tt"><tt>MimeType</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Value: <tt>application/x-vmware-remote-console-2011-1</tt>
+</p>
+</li>
+<li>
+<p>
+Used to load the plugin in Firefox.
+</p>
+</li>
+</ul></div>
+<h3 id="_tt_clsid_tt"><tt>CLSID</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Value: <tt>CLSID:A24C4C22-E2B7-4701-9DF1-E51BDC809850</tt>
+</p>
+</li>
+<li>
+<p>
+Used to load the plugin in Internet Explorer.
+</p>
+</li>
+</ul></div>
+</div>
+<h2 id="_property_value_constants">Property Value Constants</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>The following property values are exposed by the VMRC API and should be
+retrieved and used as appropriate when invoking API methods or interpreting
+event callback parameters.</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="sidebar-title">Note</div>
+<div class="paragraph"><p>In Internet Explorer, these values are exposed as dictionaries corresponding
+to each property value class name; whereas in Firefox each value directly
+corresponds to a property name.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="hsides"
+cellspacing="0" cellpadding="4">
+<caption class="title">Example: values of <tt>VMRC_CS_CONNECTED</tt></caption>
+<col width="16%" />
+<col width="83%" />
+<thead>
+<tr>
+<th align="left" valign="top">Browser          </th>
+<th align="left" valign="top"> Syntax</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Internet Explorer</p></td>
+<td align="left" valign="top"><p class="table"><tt>pluginObj.VMRC_ConnectionState("VMRC_CS_CONNECTED")</tt></p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Firefox</p></td>
+<td align="left" valign="top"><p class="table"><tt>pluginObj.VMRC_ConnectionState.VMRC_CS_CONNECTED</tt></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div></div>
+<h3 id="_tt_vmrc_mode_tt"><tt>VMRC_Mode</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Values:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>VMRC_MKS</tt>
+</p>
+</li>
+<li>
+<p>
+<tt>VMRC_DEVICES</tt>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Specified at <tt>startup()</tt> time to indicate the mode of the VMRC plugin
+    instance for the lifetime of its connection.
+</p>
+</li>
+<li>
+<p>
+A plugin may operate in either <tt>MKS</tt> mode where guest screen contents are
+    displayed and the user can interact with the guest, or <tt>DEVICES</tt> mode in
+    order to connect/disconnect remote device backings to/from virtual machine
+    devices.
+</p>
+</li>
+<li>
+<p>
+Currently <tt>VMRC_MKS</tt> is the only supported value.
+</p>
+</li>
+</ul></div>
+<h3 id="_tt_vmrc_messagemode_tt"><tt>VMRC_MessageMode</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Values:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>VMRC_EVENT_MESSAGES</tt>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Specified at <tt>startup()</tt> time to indicate the mode by which messages are
+    delivered from the plugin to its container.
+</p>
+</li>
+<li>
+<p>
+Currently <tt>VMRC_EVENT_MESSAGES</tt> is the only supported value.
+</p>
+</li>
+</ul></div>
+<h3 id="_tt_vmrc_messagetype_tt"><tt>VMRC_MessageType</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Values:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>VMRC_MESSAGE_INFO</tt>
+</p>
+</li>
+<li>
+<p>
+<tt>VMRC_MESSAGE_WARNING</tt>
+</p>
+</li>
+<li>
+<p>
+<tt>VMRC_MESSAGE_ERROR</tt>
+</p>
+</li>
+<li>
+<p>
+<tt>VMRC_MESSAGE_HINT</tt>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Indicates the type of message delivered to the <tt>onMessage()</tt> event handler.
+</p>
+</li>
+</ul></div>
+<h3 id="_tt_vmrc_connectionstate_tt"><tt>VMRC_ConnectionState</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Values:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>VMRC_CS_DISCONNECTED</tt>
+</p>
+</li>
+<li>
+<p>
+<tt>VMRC_CS_CONNECTED</tt>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Specifies the connection state to the <tt>onConnectionState()</tt> event handler.
+</p>
+</li>
+</ul></div>
+<h3 id="_tt_vmrc_grabstate_tt"><tt>VMRC_GrabState</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Values:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>VMRC_GS_GRABBED</tt>
+</p>
+</li>
+<li>
+<p>
+<tt>VMRC_GS_UNGRABBED_HARD</tt>
+</p>
+</li>
+<li>
+<p>
+<tt>VMRC_GS_UNGRABBED_SOFT</tt>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Specifies the active grab type to the <tt>onGrabState()</tt> event handler.
+</p>
+</li>
+<li>
+<p>
+In a soft-ungrab state, input will be redirected to the guest once the user
+    mouses over the guest window.
+</p>
+</li>
+</ul></div>
+</div>
+<h2 id="_events">Events</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>The following events are generated by the VMRC API.</p></div>
+<div class="sidebarblock">
+<div class="sidebar-content">
+<div class="sidebar-title">Note</div>
+<div class="paragraph"><p>In Internet Explorer, handler functions can be bound to events generated by the
+plugin using the attachEvent method exposed by the plugin. In Firefox, each
+event corresponds to a plugin instance property and handlers may be bound by
+setting the value of the property.</p></div>
+</div></div>
+<h3 id="_tt_onconnectionstatechange_cs_host_vmid_userrequested_reason_tt"><tt>onConnectionStateChange(cs, host, vmId, userRequested, reason)</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Invoked in response to connection state changes.
+</p>
+</li>
+<li>
+<p>
+Handler parameters:
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>cs [string]</tt>
+</dt>
+<dd>
+<p>
+        connection state, one of <tt>VMRC_CS_DISCONNECTED</tt> or <tt>VMRC_CS_CONNECTED</tt>
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>host [string]</tt>
+</dt>
+<dd>
+<p>
+        remote hostname of connection
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>vmId [string]</tt>
+</dt>
+<dd>
+<p>
+        VM id/reference for connection
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>userRequested [boolean]</tt>
+</dt>
+<dd>
+<p>
+        was this connection state requested by the user?
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>reason [string]</tt>
+</dt>
+<dd>
+<p>
+        further information on what took place
+</p>
+</dd>
+</dl></div>
+</li>
+</ul></div>
+<h3 id="_tt_onscreensizechange_width_height_tt"><tt>onScreenSizeChange(width, height)</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Invoked in response to changes in the guest screen size.
+</p>
+</li>
+<li>
+<p>
+Handler parameters:
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>width [int]</tt>
+</dt>
+<dd>
+<p>
+        new width of guest screen
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>height [int]</tt>
+</dt>
+<dd>
+<p>
+        new height of guest screen
+</p>
+</dd>
+</dl></div>
+</li>
+</ul></div>
+<h3 id="_tt_onfullscreenchange_fs_tt"><tt>onFullscreenChange(fs)</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Invoked in response to changes in the plugin fullscreen state.
+</p>
+</li>
+<li>
+<p>
+Handler parameters:
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>fs [boolean]</tt>
+</dt>
+<dd>
+<p>
+        new fullscreen state (true &#8594; plugin has switched to fullscreen)
+</p>
+</dd>
+</dl></div>
+</li>
+</ul></div>
+<h3 id="_tt_ongrabstatechangehandler_gs_tt"><tt>onGrabStateChangeHandler(gs)</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Invoked in response to changes in the plugin grab state.
+</p>
+</li>
+<li>
+<p>
+Handler parameters:
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>gs [VMRC_GS_GRABBED, VMRC_GS_UNGRABBED_HARD, VMRC_GS_UNGRABBED_SOFT]</tt>
+</dt>
+<dd>
+<p>
+        new grab state
+</p>
+</dd>
+</dl></div>
+</li>
+</ul></div>
+<h3 id="_tt_onmessagehandler_type_message_tt"><tt>onMessageHandler(type, message)</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Invoked in response to a new message generated by the plugin.
+</p>
+</li>
+<li>
+<p>
+Handler parameters:
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>type [VMRC_MESSAGE_INFO, VMRC_MESSAGE_WARNING, VMRC_MESSAGE_ERROR, VMRC_MESSAGE_HINT]</tt>
+</dt>
+<dd>
+<p>
+        type of message
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>message [string]</tt>
+</dt>
+<dd>
+<p>
+        message content
+</p>
+</dd>
+</dl></div>
+</li>
+</ul></div>
+</div>
+<h2 id="_methods">Methods</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>The following methods are provided by the VMRC API.</p></div>
+<h3 id="_tt_isreadytostart_tt"><tt>isReadyToStart()</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Indicates whether the plugin has loaded and is ready to be started.
+</p>
+</li>
+<li>
+<p>
+Returns: <tt>[boolean]</tt>
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>true</tt>
+</dt>
+<dd>
+<p>
+         if <tt>startup()</tt> can be called
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>false</tt>
+</dt>
+<dd>
+<p>
+         if not
+</p>
+</dd>
+</dl></div>
+</li>
+</ul></div>
+<h3 id="_tt_startup_mode_msgmode_persistent_advancedconfig_tt"><tt>startup(mode, msgmode, persistent, advancedconfig)</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Must be invoked prior to <tt>connect()</tt> in order to initialize the plugin.
+</p>
+</li>
+<li>
+<p>
+Parameters:
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>mode [VMRC_Mode]</tt>
+</dt>
+<dd>
+<p>
+         only supported value is <tt>VMRC_MKS</tt>
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>msgmode [VMRC_MessageMode]</tt>
+</dt>
+<dd>
+<p>
+         only supported value is <tt>VMRC_EVENT_MESSAGES</tt>
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>persistent [boolean]</tt>
+</dt>
+<dd>
+<p>
+         only supported value is <tt>false</tt>
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>advancedconfig [string]</tt>
+</dt>
+<dd>
+<p>
+         only supported value is <tt>usebrowserproxy=true;tunnelmks=true</tt>
+</p>
+</dd>
+</dl></div>
+</li>
+<li>
+<p>
+Returns: <tt>[boolean]</tt>
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>true</tt>
+</dt>
+<dd>
+<p>
+         on success
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>false</tt>
+</dt>
+<dd>
+<p>
+         on failure
+</p>
+</dd>
+</dl></div>
+</li>
+</ul></div>
+<h3 id="_tt_shutdown_tt"><tt>shutdown()</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Shuts down the plugin instance.
+</p>
+</li>
+<li>
+<p>
+Returns: <tt>[boolean]</tt>
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>true</tt>
+</dt>
+<dd>
+<p>
+         on success
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>false</tt>
+</dt>
+<dd>
+<p>
+         on failure
+</p>
+</dd>
+</dl></div>
+</li>
+</ul></div>
+<h3 id="_tt_connect_host_ticket_internal1_internal2_vmid_internal3_internal4_tt"><tt>connect(host, ticket, internal1, internal2, vmid, internal3, internal4)</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Connect the plugin instance to a remote host.
+</p>
+</li>
+<li>
+<p>
+Parameters:
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>host [string]</tt>
+</dt>
+<dd>
+<p>
+         hostname/IP of remote host provided by VMware vCloud Director API
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>ticket [string]</tt>
+</dt>
+<dd>
+<p>
+         screen ticket provided by VMware vCloud Director API
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>vmid [string]</tt>
+</dt>
+<dd>
+<p>
+         vm ID provided by VMware vCloud Director API
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>internal1</tt>, <tt>internal2</tt>, <tt>internal3</tt>, <tt>internal4 [string]</tt>
+</dt>
+<dd>
+<p>
+         internal use, must be the empty string ("")
+</p>
+</dd>
+</dl></div>
+</li>
+<li>
+<p>
+Returns: <tt>[boolean]</tt>
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>true</tt>
+</dt>
+<dd>
+<p>
+         on success
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>false</tt>
+</dt>
+<dd>
+<p>
+         on failure
+</p>
+</dd>
+</dl></div>
+</li>
+</ul></div>
+<h3 id="_tt_disconnect_tt"><tt>disconnect()</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Disconnect the plugin instance from a remote host.
+</p>
+</li>
+<li>
+<p>
+Returns: <tt>[boolean]</tt>
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>true</tt>
+</dt>
+<dd>
+<p>
+         on success
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>false</tt>
+</dt>
+<dd>
+<p>
+         on failure
+</p>
+</dd>
+</dl></div>
+</li>
+</ul></div>
+<h3 id="_tt_getconnectionstate_tt"><tt>getConnectionState()</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Retrieve current connection state.
+</p>
+</li>
+<li>
+<p>
+Returns: <tt>[VMRC_ConnectionState]</tt>
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>VMRC_CS_CONNECTED</tt>
+</dt>
+<dd>
+<p>
+         if the plugin is connected
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>VMRC_CS_DISCONNECTED</tt>
+</dt>
+<dd>
+<p>
+         if the plugin is not connected
+</p>
+</dd>
+</dl></div>
+</li>
+</ul></div>
+<h3 id="_tt_screenwidth_tt"><tt>screenWidth()</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Retrieve current screen width.
+</p>
+</li>
+<li>
+<p>
+Returns: <tt>[int]</tt>
+</p>
+</li>
+</ul></div>
+<h3 id="_tt_screenheight_tt"><tt>screenHeight()</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Retrieve current screen height.
+</p>
+</li>
+<li>
+<p>
+Returns: <tt>[int]</tt>
+</p>
+</li>
+</ul></div>
+<h3 id="_tt_setfullscreen_fs_tt"><tt>setFullscreen(fs)</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Instruct the plugin to enter/exit fullscreen mode.
+</p>
+</li>
+<li>
+<p>
+Parameters:
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>fs [boolean]</tt>
+</dt>
+<dd>
+<p>
+         <tt>true</tt> to enter fullscreen mode, <tt>false</tt> to exit
+</p>
+</dd>
+</dl></div>
+</li>
+<li>
+<p>
+Returns: <tt>[boolean]</tt>
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>true</tt>
+</dt>
+<dd>
+<p>
+         on success
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>false</tt>
+</dt>
+<dd>
+<p>
+         on failure
+</p>
+</dd>
+</dl></div>
+</li>
+</ul></div>
+<h3 id="_tt_sendcad_tt"><tt>sendCAD()</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Instruct the plugin to deliver a Control-Alt-Delete key sequence to the guest.
+</p>
+</li>
+<li>
+<p>
+Returns: <tt>[boolean]</tt>
+</p>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+<tt>true</tt>
+</dt>
+<dd>
+<p>
+         on success
+</p>
+</dd>
+<dt class="hdlist1">
+<tt>false</tt>
+</dt>
+<dd>
+<p>
+         on failure
+</p>
+</dd>
+</dl></div>
+</li>
+</ul></div>
+<h3 id="_tt_getversion_tt"><tt>getVersion()</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Retrieve a string representing the current complete version number of the
+     installed VMRC Plugin.
+</p>
+</li>
+<li>
+<p>
+Returns: <tt>[string]</tt> VMRC plugin full version number
+</p>
+</li>
+</ul></div>
+<h3 id="_tt_getsupportedapi_tt"><tt>getSupportedApi()</tt></h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Retrieve an array of supported APIs. See example:getSupportedApi().
+</p>
+</li>
+<li>
+<p>
+Returns: <tt>[string[]]</tt> array indicating supported API strings, e.g. <tt>"vsphere-2011"</tt>
+</p>
+</li>
+</ul></div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2011-08-29 10:33:14 EDT
+</div>
+</div>
+</body>
+</html>

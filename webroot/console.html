@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>VM Console</title>
+
+        <link href="libs/jquery-ui/jquery-ui-1.8.13.custom.css" rel="stylesheet" type="text/css" />
+        <link href="css/console.css" rel="stylesheet" type="text/css" />
+        <link href="css/jquery-custom.css" rel="stylesheet" type="text/css" />
+
+        <script type="text/javascript" src="libs/jquery/jquery-1.6.1.min.js"></script>
+        <script type="text/javascript" src="libs/jquery-ui/jquery-ui-1.8.13.custom.min.js"></script>
+        <script type="text/javascript" src="js/core.js"></script>
+        <script type="text/javascript" src="js/debug.js"></script>
+        <script type="text/javascript" src="js/event-manager.js"></script>
+        <script type="text/javascript" src="js/button.js"></script>
+        <script type="text/javascript" src="js/button-manager.js"></script>
+        <script type="text/javascript" src="js/dialog.js"></script>
+        <script type="text/javascript" src="js/dialog-manager.js"></script>
+        <script type="text/javascript" src="js/alert.js"></script>
+        <script type="text/javascript" src="js/confirm.js"></script>
+        <script type="text/javascript" src="js/constants.js"></script>
+        <script type="text/javascript" src="js/normalize-constants.js"></script>
+        <script type="text/javascript" src="js/parse-ticket.js"></script>
+        <script type="text/javascript" src="js/console.js"></script>
+        <script type="text/javascript" src="js/vcd-console.js"></script>
+        <script type="text/javascript">
+            /**
+             * Retrieve the ticket from the query string of the page URL.
+             *
+             * In practice, the ticket passing would involve a more complex mechanism.
+             * This method is not robust and does not allow users to refresh the page.
+             *
+             * Additionally, this method violates the intent of the ticketer function;
+             * a unique/new ticket should be returned each time. Howere, to avoid
+             * assumptions about backend technologies being used, this is not shown
+             * in this example. For a client to be compatible with updates to the API,
+             * it would need to obey that contract.
+             *
+             * @return {string} A ticket URI.
+             */
+            var getTicket = function () {
+                return decodeURIComponent(window.location.search.substr(1));
+            }
+
+            $(function() {
+                vmware.log("TRACE", "init", "Ticket: {0}".format(getTicket()));
+
+                $('#footer').text("Connecting...".localize());
+                console1 = vmware.vcdConsole("mainContent", "toolbar", "footer");
+                console1.init(getTicket);
+            });
+        </script>
+    </head>
+    <body>
+        <div id="toolbar"></div>
+        <div id="mainContent"></div>
+        <div id="footer"></div>
+    </body>
+</html>

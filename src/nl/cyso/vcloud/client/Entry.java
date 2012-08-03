@@ -101,6 +101,18 @@ public class Entry {
 				}
 				client.listVApps(cli.getOptionValue("org"), cli.getOptionValue("vdc"));
 				break;
+			case VM:
+				if (!cli.hasOption("org")) {
+					usageError("An organization must also be specified when listing VMs", opt);
+				}
+				if (!cli.hasOption("vdc")) {
+					usageError("A VDC must also be specified when listing VMs", opt);
+				}
+				if (!cli.hasOption("vapp")) {
+					usageError("A vApp must also be specified when listing VMs", opt);
+				}
+				client.listVMs(cli.getOptionValue("org"), cli.getOptionValue("vdc"), cli.getOptionValue("vapp"));
+				break;
 			default:
 				System.err.println("Not yet implemented");
 				break;

@@ -25,10 +25,13 @@ import com.vmware.vcloud.sdk.CatalogItem;
 import com.vmware.vcloud.sdk.OrgNetwork;
 import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.VCloudException;
+import com.vmware.vcloud.sdk.VM;
 import com.vmware.vcloud.sdk.Vapp;
 import com.vmware.vcloud.sdk.VappTemplate;
 import com.vmware.vcloud.sdk.VcloudClient;
 import com.vmware.vcloud.sdk.Vdc;
+import com.vmware.vcloud.sdk.VirtualDisk;
+import com.vmware.vcloud.sdk.VirtualNetworkCard;
 import com.vmware.vcloud.sdk.constants.Version;
 
 public class vCloudClient {
@@ -148,6 +151,46 @@ public class vCloudClient {
 			}
 		} catch (VCloudException e) {
 			System.err.println("An error occured while retrieving vApps");
+			System.exit(1);
+		}
+	}
+
+	public void listVMs(String org, String vdc, String vapp) {
+		this.vccPreCheck();
+
+		Vapp vappObj = this.getVApp(org, vdc, vapp);
+
+		try {
+			System.out.println("VMs:");
+			List<VM> vms = vappObj.getChildrenVms();
+
+			for (VM vm : vms) {
+				System.out.println(String.format("----\n%-20s - %s", vm.getReference().getName(), vm.getResource().getDescription()));
+				System.out.println(String.format("\tCPUs: %s, RAM: %s MB", vm.getCpu().getNoOfCpus(), vm.getMemory().getMemorySize()));
+				System.out.println(String.format("\tOS: %s", vm.getOperatingSystemSection().getDescription().getValue()));
+				try {
+					System.out.println(String.format("\tVMware Tools: %s", vm.getRuntimeInfoSection().getVMWareTools().getVersion()));
+				} catch (NullPointerException ne) {
+					System.out.println(String.format("\tVMware Tools: No"));
+				}
+
+				System.out.println(String.format("\tConsole Link: http://vcloud.localhost/console.html?%s", vm.acquireTicket().getValue()));
+				System.out.println("\tDisks:");
+				for (VirtualDisk disk : vm.getDisks()) {
+					if (disk.isHardDisk()) {
+						System.out.println(String.format("\t\t%-10s - %s MB", disk.getItemResource().getElementName().getValue(), disk.getHardDiskSize()));
+					} else {
+						System.out.println(String.format("\t\t%-10s", disk.getItemResource().getElementName().getValue()));
+					}
+				}
+
+				System.out.println("\tNICs:");
+				for (VirtualNetworkCard net : vm.getNetworkCards()) {
+					System.out.println(String.format("\t\t%-14s - %15s - %s - %s", net.getIpAddress(), net.getItemResource().getAddress().getValue(), net.getItemResource().getConnection().get(0).getValue(), net.getItemResource().getDescription().getValue()));
+				}
+			}
+		} catch (VCloudException e) {
+			System.err.println("An error occured while retrieving VMs");
 			System.exit(1);
 		}
 	}
