@@ -87,6 +87,7 @@ public class vCloudClient {
 			}
 		} catch (VCloudException e) {
 			System.err.println("An error occured while retrieving organizations");
+			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
 	}
@@ -119,6 +120,7 @@ public class vCloudClient {
 			}
 		} catch (VCloudException e) {
 			System.err.println("An error occured while retrieving virtual data centers");
+			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
 	}
@@ -151,6 +153,7 @@ public class vCloudClient {
 			}
 		} catch (VCloudException e) {
 			System.err.println("An error occured while retrieving vApps");
+			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
 	}
@@ -174,7 +177,12 @@ public class vCloudClient {
 					System.out.println(String.format("\tVMware Tools: No"));
 				}
 
-				System.out.println(String.format("\tConsole Link: http://vcloud.localhost/console.html?%s", vm.acquireTicket().getValue()));
+				try {
+					System.out.println(String.format("\tConsole Link: http://vcloud.localhost/console.html?%s", vm.acquireTicket().getValue()));
+				} catch (VCloudException e) {
+					System.out.println(String.format("\tConsole Link: %s", e.getLocalizedMessage()));
+				}
+
 				System.out.println("\tDisks:");
 				for (VirtualDisk disk : vm.getDisks()) {
 					if (disk.isHardDisk()) {
@@ -191,6 +199,7 @@ public class vCloudClient {
 			}
 		} catch (VCloudException e) {
 			System.err.println("An error occured while retrieving VMs");
+			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
 	}
@@ -230,6 +239,7 @@ public class vCloudClient {
 			}
 		} catch (VCloudException e) {
 			System.err.println("An error occured while retrieving Catalogs");
+			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
 	}
@@ -243,6 +253,7 @@ public class vCloudClient {
 			orgObj = Organization.getOrganizationByReference(this.vcc, orgRef);
 		} catch (VCloudException e) {
 			System.err.println("An error occured while selecting the organization");
+			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		} catch (NullPointerException ne) {
 			System.err.println("Organization does not exist");
@@ -262,6 +273,7 @@ public class vCloudClient {
 			vdcObj = Vdc.getVdcByReference(this.vcc, vdcRef);
 		} catch (VCloudException e) {
 			System.err.println("An error occured while selecting the virtual data center");
+			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		} catch (NullPointerException ne) {
 			System.err.println("Virtual data center does not exist");
@@ -304,6 +316,7 @@ public class vCloudClient {
 			}
 		} catch (VCloudException e) {
 			System.err.println("An error occured while retrieving Catalog");
+			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
 
@@ -322,6 +335,7 @@ public class vCloudClient {
 			}
 		} catch (VCloudException e) {
 			System.err.println("An error occured while retrieving vApp");
+			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		} catch (NullPointerException ne) {
 			System.err.println("Catalog item not found");
@@ -396,7 +410,9 @@ public class vCloudClient {
 		try {
 			vappObj.recomposeVapp(recomp);
 		} catch (VCloudException e) {
-			e.printStackTrace();
+			System.err.println("An error occured while recomposing vApp");
+			System.err.println(e.getLocalizedMessage());
+			System.exit(1);
 		}
 	}
 }
