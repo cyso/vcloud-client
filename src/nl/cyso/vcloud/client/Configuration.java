@@ -255,7 +255,7 @@ public class Configuration {
 		}
 	}
 
-	public static void loadFile(String filename) {
+	protected static void loadFile(String filename) {
 		org.apache.commons.configuration.Configuration conf = null;
 		try {
 			conf = new PropertiesConfiguration(filename);
