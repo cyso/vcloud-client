@@ -217,8 +217,5 @@ public class Entry {
 		} else {
 			usageError("No mode was selected", opt);
 		}
-
-		// Something went wrong if we got here
-		System.exit(-1);
 	}
 }
