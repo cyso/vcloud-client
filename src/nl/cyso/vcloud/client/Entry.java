@@ -2,10 +2,14 @@ package nl.cyso.vcloud.client;
 
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.cli.AlreadySelectedException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.MissingOptionException;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
@@ -60,11 +64,14 @@ public class Entry {
 		opt.addOption("s", "server", true, "vCloud Director server URI");
 
 		// Modes
-		opt.addOption("h", "help", false, "Show help");
-		opt.addOption("v", "version", false, "Show version information");
-		opt.addOption("l", "list", true, "List vCloud objects (org|vdc|vapp|catalog|vm)");
-		opt.addOption("a", "add-vm", false, "Add a new VM from a vApp Template to an existing vApp");
-		opt.addOption("r", "remove-vm", false, "Remove a VM from an existing vApp");
+		OptionGroup modes = new OptionGroup();
+		modes.addOption(new Option("h", "help", false, "Show help"));
+		modes.addOption(new Option("v", "version", false, "Show version information"));
+		modes.addOption(new Option("l", "list", true, "List vCloud objects (org|vdc|vapp|catalog|vm)"));
+		modes.addOption(new Option("a", "add-vm", false, "Add a new VM from a vApp Template to an existing vApp"));
+		modes.addOption(new Option("r", "remove-vm", false, "Remove a VM from an existing vApp"));
+		modes.setRequired(true);
+		opt.addOptionGroup(modes);
 
 		// Selectors
 		opt.addOption(OptionBuilder.withLongOpt("organization").hasArg().withArgName("ORG").withDescription("Select this Organization").create());
@@ -74,11 +81,11 @@ public class Entry {
 		opt.addOption(OptionBuilder.withLongOpt("catalog").hasArg().withArgName("CATALOG").withDescription("Select this Catalog").create());
 
 		// User input
-		opt.addOption("f", "fqdn", true, "Name of object to create");
-		opt.addOption("d", "description", true, "Description of object to create");
-		opt.addOption("t", "template", true, "Template of object to create");
-		opt.addOption("i", "ip", true, "IP of the object to create");
-		opt.addOption("n", "network", true, "Network of the object to create");
+		opt.addOption(OptionBuilder.withLongOpt("fqdn").hasArg().withArgName("FQDN").withDescription("Name of object to create").create());
+		opt.addOption(OptionBuilder.withLongOpt("description").hasArg().withArgName("DESC").withDescription("Description of object to create").create());
+		opt.addOption(OptionBuilder.withLongOpt("template").hasArg().withArgName("TEMPLATE").withDescription("Template of object to create").create());
+		opt.addOption(OptionBuilder.withLongOpt("ip").hasArg().withArgName("IP").withDescription("IP of the object to create").create());
+		opt.addOption(OptionBuilder.withLongOpt("network").hasArg().withArgName("NETWORK").withDescription("Network of the object to create").create());
 
 		CommandLine cli = null;
 		try {
@@ -86,6 +93,11 @@ public class Entry {
 		} catch (MissingArgumentException me) {
 			usageError(me.getLocalizedMessage(), opt);
 			System.exit(-1);
+		} catch (MissingOptionException mo) {
+			usageError(mo.getLocalizedMessage(), opt);
+			System.exit(-1);
+		} catch (AlreadySelectedException ase) {
+			usageError(ase.getLocalizedMessage(), opt);
 		} catch (ParseException e) {
 			e.printStackTrace();
 			System.exit(-1);
