@@ -12,5 +12,5 @@ public final class Version {
 	/**
 	 * Actual Git revision according to `git describe` during bumping
 	 */
-	public static final String BUILD_VERSION = "70c2e84";
+	public static final String BUILD_VERSION = "2d7dee9";
 }
