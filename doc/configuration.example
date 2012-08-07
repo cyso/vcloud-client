@@ -13,6 +13,8 @@
 #list=
 # Add VM mode
 #addvm=
+# Remove VM mode
+#removevm=
 
 ## Selectors
 # Select this Organization

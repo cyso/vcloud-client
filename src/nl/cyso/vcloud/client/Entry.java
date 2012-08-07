@@ -64,6 +64,7 @@ public class Entry {
 		opt.addOption("v", "version", false, "Show version information");
 		opt.addOption("l", "list", true, "List vCloud objects (org|vdc|vapp|catalog|vm)");
 		opt.addOption("a", "add-vm", false, "Add a new VM from a vApp Template to an existing vApp");
+		opt.addOption("r", "remove-vm", false, "Remove a VM from an existing vApp");
 
 		// Selectors
 		opt.addOption(OptionBuilder.withLongOpt("organization").hasArg().withArgName("ORG").withDescription("Select this Organization").create());
@@ -187,6 +188,20 @@ public class Entry {
 			}
 
 			waitForTaskCompletion(client.recomposeVApp(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getCatalog(), Configuration.getTemplate(), Configuration.getFqdn(), Configuration.getDescription(), Configuration.getIp().getHostAddress(), Configuration.getNetwork()));
+		} else if (Configuration.getMode() == ModeType.REMOVEVM) {
+			if (!Configuration.hasOrganization()) {
+				usageError("An existing organization has to be selected", opt);
+			}
+			if (!Configuration.hasVDC()) {
+				usageError("An existing virtual data center has to be selected", opt);
+			}
+			if (!Configuration.hasVApp()) {
+				usageError("An existing vApp has to be selected", opt);
+			}
+			if (!Configuration.hasVM()) {
+				usageError("An existing VM has to be selected", opt);
+			}
+			waitForTaskCompletion(client.removeVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getVM()));
 		} else {
 			usageError("No mode was selected", opt);
 		}

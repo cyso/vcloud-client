@@ -242,6 +242,8 @@ public class Configuration {
 					Configuration.setListType(ListType.valueOf(cli.getOptionValue(opt.getLongOpt()).toUpperCase()));
 				} else if (opt.getLongOpt().equals("add-vm")) {
 					Configuration.setMode(ModeType.ADDVM);
+				} else if (opt.getLongOpt().equals("remove-vm")) {
+					Configuration.setMode(ModeType.REMOVEVM);
 				} else if (opt.getLongOpt().equals("ip")) {
 					try {
 						Configuration.setIp(cli.getOptionValue(opt.getLongOpt()));
@@ -275,8 +277,10 @@ public class Configuration {
 			} else if (key.equals("list")) {
 				Configuration.setMode(ModeType.LIST);
 				Configuration.setListType(ListType.valueOf(conf.getString(key).toUpperCase()));
-			} else if (key.equals("add-vm")) {
+			} else if (key.equals("addvm")) {
 				Configuration.setMode(ModeType.ADDVM);
+			} else if (key.equals("removevm")) {
+				Configuration.setMode(ModeType.REMOVEVM);
 			} else if (key.equals("ip")) {
 				try {
 					Configuration.setIp(conf.getString(key));

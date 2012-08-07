@@ -294,6 +294,7 @@ public class vCloudClient {
 			vappObj = Vapp.getVappByReference(this.vcc, vdcObj.getVappRefByName(vapp));
 		} catch (VCloudException e) {
 			System.err.println("An error occured while retrieving vApp");
+			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		} catch (NullPointerException ne) {
 			System.err.println("vApp does not exist");
@@ -301,6 +302,32 @@ public class vCloudClient {
 		}
 
 		return vappObj;
+	}
+
+	private VM getVM(String org, String vdc, String vapp, String vm) {
+		this.vccPreCheck();
+
+		VM vmObj = null;
+		try {
+			Vapp vappObj = this.getVApp(org, vdc, vapp);
+
+			for (VM v : vappObj.getChildrenVms()) {
+				if (v.getReference().getName().equals(vm)) {
+					vmObj = v;
+				}
+			}
+		} catch (VCloudException e) {
+			System.err.println("An error occured while retrieving VM");
+			System.err.println(e.getLocalizedMessage());
+			System.exit(1);
+		}
+
+		if (vmObj == null) {
+			System.err.println("VM does not exist");
+			System.exit(1);
+		}
+
+		return vmObj;
 	}
 
 	private CatalogItem getCatalogItem(String org, String catalog, String item, String type) {
@@ -413,6 +440,23 @@ public class vCloudClient {
 			t = vappObj.recomposeVapp(recomp);
 		} catch (VCloudException e) {
 			System.err.println("An error occured while recomposing vApp");
+			System.err.println(e.getLocalizedMessage());
+			System.exit(1);
+		}
+
+		return t;
+	}
+
+	public Task removeVM(String org, String vdc, String vapp, String vm) {
+		this.vccPreCheck();
+
+		VM vmObj = this.getVM(org, vdc, vapp, vm);
+
+		Task t = null;
+		try {
+			t = vmObj.delete();
+		} catch (VCloudException e) {
+			System.err.println("An error occured while removing VM");
 			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
