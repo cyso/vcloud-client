@@ -9,7 +9,7 @@
 ## Mode selectors, use only one at a time
 # Always show help
 #help=
-# List mode (use: org,vapp,vm,catalog)
+# List mode (use: org,vdc,vapp,vm,catalog)
 #list=
 # Add VM mode
 #addvm=
