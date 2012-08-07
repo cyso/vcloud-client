@@ -235,6 +235,8 @@ public class Configuration {
 			if (cli.hasOption(opt.getLongOpt())) {
 				if (opt.getLongOpt().equals("help")) {
 					Configuration.setMode(ModeType.HELP);
+				} else if (opt.getLongOpt().equals("version")) {
+					Configuration.setMode(ModeType.VERSION);
 				} else if (opt.getLongOpt().equals("list")) {
 					Configuration.setMode(ModeType.LIST);
 					Configuration.setListType(ListType.valueOf(cli.getOptionValue(opt.getLongOpt()).toUpperCase()));
@@ -268,6 +270,8 @@ public class Configuration {
 
 			if (key.equals("help")) {
 				Configuration.setMode(ModeType.HELP);
+			} else if (key.equals("version")) {
+				Configuration.setMode(ModeType.VERSION);
 			} else if (key.equals("list")) {
 				Configuration.setMode(ModeType.LIST);
 				Configuration.setListType(ListType.valueOf(conf.getString(key).toUpperCase()));

@@ -11,6 +11,8 @@
 	<property name="entry.point" value="Entry"/>
 	<property name="executable" value="vcloud-client"/>
 
+	<available file=".git" type="dir" property="git.present"/>
+
 	<path id="libraries">
 		<pathelement location="${class.root}"/> 
 		<fileset dir="${libs.dir}">
@@ -43,7 +45,7 @@
 	</target>
 
 	<!-- Create our runtime subdirectories and copy resources into them -->
-	<target name="prepare" description="Sets up build structures">
+	<target name="prepare" depends="git-revision" description="Sets up build structures">
 		<delete dir="${class.root}"/>
 		<mkdir dir="${class.root}"/>
 		
@@ -75,6 +77,22 @@ java -classpath ${project.class.path} ${root.package}.${entry.point} "$$@"</echo
 java -Xdebug -Xrunjdwp:transport=dt_socket,address=8998,server=y -classpath ${project.class.path} ${root.package}.${entry.point} "$$@"</echo>
 		<chmod file="${executable}" perm="a+x"/>
 		<chmod file="${executable}-debug" perm="a+x"/>
+	</target>
+
+	<target name="git-revision" description="Store git revision in ${version}" if="git.present">
+		<exec executable="git" outputproperty="version" failifexecutionfails="false" errorproperty="">
+			<arg value="describe"/>
+			<arg value="--tags"/>
+			<arg value="--always"/>
+			<arg value="HEAD"/>
+		</exec>
+		<condition property="version" value="${version}" else="unknown">
+			<and>
+				<isset property="version"/>
+				<length string="${version}" trim="yes" length="0" when="greater"/>
+			</and>
+		</condition>
+		<echo>${executable} BUILD_VERSION is ${version}</echo>
 	</target>
 	
 	<!-- Create a clean dist directory -->
@@ -109,5 +127,12 @@ java -Xdebug -Xrunjdwp:transport=dt_socket,address=8998,server=y -classpath ${pr
 java -jar ${executable}.jar ${root.package}.${entry.point} "$$@"</echo>
 		
 		<chmod file="${dist.dir}/${executable}" perm="a+x"/>
+	</target>
+
+	<target name="bump-version" depends="git-revision" description="Bump the BUILD_VERSION version number">
+		<replaceregexp file="${source.root}/nl/cyso/vcloud/client/Version.java">
+			<regexp pattern="BUILD_VERSION = &quot;.*&quot;;"/>
+			<substitution expression="BUILD_VERSION = &quot;${version}&quot;;"/>
+		</replaceregexp>
 	</target>
 </project>

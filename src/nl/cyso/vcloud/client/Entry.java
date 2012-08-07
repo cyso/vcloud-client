@@ -9,11 +9,9 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
 public class Entry {
-	public static final String name = "vcloud-client";
-
 	public static void usageError(String error, Options opts) {
 		System.out.println(error + "\n");
-		new HelpFormatter().printHelp(name, opts, true);
+		new HelpFormatter().printHelp(Version.PROJECT_NAME, opts, true);
 		System.exit(-1);
 	}
 
@@ -31,6 +29,7 @@ public class Entry {
 
 		// Modes
 		opt.addOption("h", "help", false, "Show help");
+		opt.addOption("v", "version", false, "Show version information");
 		opt.addOption("l", "list", true, "List vCloud objects (org|vdc|vapp|catalog|vm)");
 		opt.addOption("a", "add-vm", false, "Add a new VM from a vApp Template to an existing vApp");
 
@@ -67,6 +66,9 @@ public class Entry {
 
 		if (Configuration.getMode() == ModeType.HELP) {
 			new HelpFormatter().printHelp("vcloud-client", opt, true);
+			System.exit(0);
+		} else if (Configuration.getMode() == ModeType.VERSION) {
+			System.out.println(String.format("%s version %s\nBUILD_VERSION: %s", Version.PROJECT_NAME, Version.RELEASE_VERSION, Version.BUILD_VERSION));
 			System.exit(0);
 		}
 

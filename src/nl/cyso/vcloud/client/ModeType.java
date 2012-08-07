@@ -1,5 +1,5 @@
 package nl.cyso.vcloud.client;
 
 public enum ModeType {
-	HELP, LIST, ADDVM
+	HELP, VERSION, LIST, ADDVM
 }
