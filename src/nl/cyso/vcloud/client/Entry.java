@@ -199,7 +199,7 @@ public class Entry {
 				usageError("A Network has to be specified for the new VM", opt);
 			}
 
-			waitForTaskCompletion(client.recomposeVApp(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getCatalog(), Configuration.getTemplate(), Configuration.getFqdn(), Configuration.getDescription(), Configuration.getIp().getHostAddress(), Configuration.getNetwork()));
+			waitForTaskCompletion(client.addVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getCatalog(), Configuration.getTemplate(), Configuration.getFqdn(), Configuration.getDescription(), Configuration.getIp().getHostAddress(), Configuration.getNetwork()));
 		} else if (Configuration.getMode() == ModeType.REMOVEVM) {
 			if (!Configuration.hasOrganization()) {
 				usageError("An existing organization has to be selected", opt);
