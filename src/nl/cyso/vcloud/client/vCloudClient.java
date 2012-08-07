@@ -24,6 +24,7 @@ import com.vmware.vcloud.sdk.Catalog;
 import com.vmware.vcloud.sdk.CatalogItem;
 import com.vmware.vcloud.sdk.OrgNetwork;
 import com.vmware.vcloud.sdk.Organization;
+import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
 import com.vmware.vcloud.sdk.VM;
 import com.vmware.vcloud.sdk.Vapp;
@@ -345,7 +346,7 @@ public class vCloudClient {
 		return itemObj;
 	}
 
-	public void recomposeVApp(String org, String vdc, String vapp, String catalog, String template, String fqdn, String description, String ip, String network) {
+	public Task recomposeVApp(String org, String vdc, String vapp, String catalog, String template, String fqdn, String description, String ip, String network) {
 		this.vccPreCheck();
 
 		Vapp vappObj = this.getVApp(org, vdc, vapp);
@@ -407,12 +408,15 @@ public class vCloudClient {
 		sources.add(s);
 
 		// Do it
+		Task t = null;
 		try {
-			vappObj.recomposeVapp(recomp);
+			t = vappObj.recomposeVapp(recomp);
 		} catch (VCloudException e) {
 			System.err.println("An error occured while recomposing vApp");
 			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
+
+		return t;
 	}
 }

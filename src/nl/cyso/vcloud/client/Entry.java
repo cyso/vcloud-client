@@ -1,5 +1,7 @@
 package nl.cyso.vcloud.client;
 
+import java.util.concurrent.TimeoutException;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.MissingArgumentException;
@@ -8,11 +10,41 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
+import com.vmware.vcloud.sdk.Task;
+import com.vmware.vcloud.sdk.VCloudException;
+
 public class Entry {
 	public static void usageError(String error, Options opts) {
 		System.out.println(error + "\n");
 		new HelpFormatter().printHelp(Version.PROJECT_NAME, opts, true);
 		System.exit(-1);
+	}
+
+	public static void waitForTaskCompletion(Task task) {
+		String message = "Waiting for task completion ";
+		String[] twirl = new String[] { "-", "\\", "|", "/" };
+		boolean wait = true;
+		int counter = 0;
+		while (wait) {
+			System.out.print("\r" + message + twirl[counter % twirl.length]);
+
+			try {
+				task.waitForTask(20);
+			} catch (TimeoutException e) {
+				// Still waiting...
+				counter++;
+				continue;
+			} catch (VCloudException vce) {
+				System.out.print("\n");
+				System.err.println("An error occured while executing task");
+				System.err.println(vce.getLocalizedMessage());
+				System.exit(-1);
+			}
+
+			System.out.print("\n");
+			System.out.println("Done");
+			wait = false;
+		}
 	}
 
 	@SuppressWarnings("static-access")
@@ -154,7 +186,7 @@ public class Entry {
 				usageError("A Network has to be specified for the new VM", opt);
 			}
 
-			client.recomposeVApp(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getCatalog(), Configuration.getTemplate(), Configuration.getFqdn(), Configuration.getDescription(), Configuration.getIp().getHostAddress(), Configuration.getNetwork());
+			waitForTaskCompletion(client.recomposeVApp(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getCatalog(), Configuration.getTemplate(), Configuration.getFqdn(), Configuration.getDescription(), Configuration.getIp().getHostAddress(), Configuration.getNetwork()));
 		} else {
 			usageError("No mode was selected", opt);
 		}
