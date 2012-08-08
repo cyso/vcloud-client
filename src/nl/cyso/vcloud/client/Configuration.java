@@ -250,7 +250,7 @@ public class Configuration {
 
 			// Modes
 			OptionGroup modes = new OptionGroup();
-			modes.addOption(new Option("h", "help", false, "Show help"));
+			modes.addOption(new Option("h", "help", false, "Show help and examples"));
 			modes.addOption(new Option("v", "version", false, "Show version information"));
 			modes.addOption(new Option("l", "list", true, "List vCloud objects (org|vdc|vapp|catalog|vm)"));
 			modes.addOption(new Option("a", "add-vm", false, "Add a new VM from a vApp Template to an existing vApp"));
