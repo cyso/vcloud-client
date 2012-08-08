@@ -4,7 +4,7 @@ public final class Version {
 	/**
 	 * Official name of the project
 	 */
-	public static final String PROJECT_NAME = "vcloud-login";
+	public static final String PROJECT_NAME = "vcloud-client";
 	/**
 	 * Official release version of vcloud-login
 	 */
