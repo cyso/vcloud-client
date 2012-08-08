@@ -208,7 +208,7 @@ public class Configuration {
 	}
 
 	protected static boolean hasIp() {
-		return Configuration.has("username");
+		return Configuration.has("ip");
 	}
 
 	protected static InetAddress getIp() {
@@ -312,6 +312,7 @@ public class Configuration {
 		} catch (ConfigurationException e) {
 			System.err.println("Failed to load configuration file");
 			System.err.println(e.getLocalizedMessage());
+			return;
 		}
 
 		Iterator<String> i = conf.getKeys();
