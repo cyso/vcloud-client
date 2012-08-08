@@ -373,7 +373,7 @@ public class vCloudClient {
 		return itemObj;
 	}
 
-	public Task recomposeVApp(String org, String vdc, String vapp, String catalog, String template, String fqdn, String description, String ip, String network) {
+	public Task addVM(String org, String vdc, String vapp, String catalog, String template, String fqdn, String description, String ip, String network) {
 		this.vccPreCheck();
 
 		Vapp vappObj = this.getVApp(org, vdc, vapp);
