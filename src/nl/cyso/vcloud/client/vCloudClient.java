@@ -8,6 +8,8 @@ import java.util.logging.Level;
 
 import javax.xml.bind.JAXBElement;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import com.vmware.vcloud.api.rest.schema.GuestCustomizationSectionType;
 import com.vmware.vcloud.api.rest.schema.InstantiationParamsType;
 import com.vmware.vcloud.api.rest.schema.IpRangeType;
@@ -33,6 +35,7 @@ import com.vmware.vcloud.sdk.VcloudClient;
 import com.vmware.vcloud.sdk.Vdc;
 import com.vmware.vcloud.sdk.VirtualDisk;
 import com.vmware.vcloud.sdk.VirtualNetworkCard;
+import com.vmware.vcloud.sdk.constants.UndeployPowerActionType;
 import com.vmware.vcloud.sdk.constants.Version;
 
 public class vCloudClient {
@@ -373,6 +376,38 @@ public class vCloudClient {
 		return itemObj;
 	}
 
+	private Task manipulateVM(String org, String vdc, String vapp, String vm, ManipulateType action) {
+		this.vccPreCheck();
+
+		VM vmObj = this.getVM(org, vdc, vapp, vm);
+
+		Task t = null;
+		try {
+			switch (action) {
+			case POWERON:
+				t = vmObj.powerOn();
+				break;
+			case POWEROFF:
+				t = vmObj.undeploy(UndeployPowerActionType.POWEROFF);
+				break;
+			case SHUTDOWN:
+				t = vmObj.undeploy(UndeployPowerActionType.SHUTDOWN);
+				break;
+			case REMOVE:
+				t = vmObj.delete();
+				break;
+			default:
+				throw new NotImplementedException("Manipulation type not implemented: " + action.toString());
+			}
+		} catch (VCloudException e) {
+			System.err.println("An error occured while manipulating VM");
+			System.err.println(e.getLocalizedMessage());
+			System.exit(1);
+		}
+
+		return t;
+	}
+
 	public Task addVM(String org, String vdc, String vapp, String catalog, String template, String fqdn, String description, String ip, String network) {
 		this.vccPreCheck();
 
@@ -448,19 +483,18 @@ public class vCloudClient {
 	}
 
 	public Task removeVM(String org, String vdc, String vapp, String vm) {
-		this.vccPreCheck();
+		return this.manipulateVM(org, vdc, vapp, vm, ManipulateType.REMOVE);
+	}
 
-		VM vmObj = this.getVM(org, vdc, vapp, vm);
+	public Task powerOnVM(String org, String vdc, String vapp, String vm) {
+		return this.manipulateVM(org, vdc, vapp, vm, ManipulateType.POWERON);
+	}
 
-		Task t = null;
-		try {
-			t = vmObj.delete();
-		} catch (VCloudException e) {
-			System.err.println("An error occured while removing VM");
-			System.err.println(e.getLocalizedMessage());
-			System.exit(1);
-		}
+	public Task powerOffVM(String org, String vdc, String vapp, String vm) {
+		return this.manipulateVM(org, vdc, vapp, vm, ManipulateType.POWEROFF);
+	}
 
-		return t;
+	public Task shutdownVM(String org, String vdc, String vapp, String vm) {
+		return this.manipulateVM(org, vdc, vapp, vm, ManipulateType.SHUTDOWN);
 	}
 }

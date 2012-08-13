@@ -255,6 +255,9 @@ public class Configuration {
 			modes.addOption(new Option("l", "list", true, "List vCloud objects (org|vdc|vapp|catalog|vm)"));
 			modes.addOption(new Option("a", "add-vm", false, "Add a new VM from a vApp Template to an existing vApp"));
 			modes.addOption(new Option("r", "remove-vm", false, "Remove a VM from an existing vApp"));
+			modes.addOption(new Option("s", "poweron-vm", false, "Start an existing VM"));
+			modes.addOption(new Option("t", "poweroff-vm", false, "Stop an existing VM (hard shutdown)"));
+			modes.addOption(new Option("u", "shutdown-vm", false, "Shutdown an existing VM (soft shutdown)"));
 			modes.setRequired(true);
 			opt.addOptionGroup(modes);
 
@@ -292,6 +295,12 @@ public class Configuration {
 					Configuration.setMode(ModeType.ADDVM);
 				} else if (opt.getLongOpt().equals("remove-vm")) {
 					Configuration.setMode(ModeType.REMOVEVM);
+				} else if (opt.getLongOpt().equals("poweron-vm")) {
+					Configuration.setMode(ModeType.POWERONVM);
+				} else if (opt.getLongOpt().equals("poweroff-vm")) {
+					Configuration.setMode(ModeType.POWEROFFVM);
+				} else if (opt.getLongOpt().equals("shutdown-vm")) {
+					Configuration.setMode(ModeType.SHUTDOWNVM);
 				} else if (opt.getLongOpt().equals("ip")) {
 					try {
 						Configuration.setIp(cli.getOptionValue(opt.getLongOpt()));
@@ -326,10 +335,6 @@ public class Configuration {
 			} else if (key.equals("list")) {
 				Configuration.setMode(ModeType.LIST);
 				Configuration.setListType(ListType.valueOf(conf.getString(key).toUpperCase()));
-			} else if (key.equals("addvm")) {
-				Configuration.setMode(ModeType.ADDVM);
-			} else if (key.equals("removevm")) {
-				Configuration.setMode(ModeType.REMOVEVM);
 			} else if (key.equals("ip")) {
 				try {
 					Configuration.setIp(conf.getString(key));

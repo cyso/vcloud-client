@@ -186,7 +186,7 @@ public class Entry {
 			}
 
 			waitForTaskCompletion(client.addVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getCatalog(), Configuration.getTemplate(), Configuration.getFqdn(), Configuration.getDescription(), Configuration.getIp().getHostAddress(), Configuration.getNetwork()));
-		} else if (Configuration.getMode() == ModeType.REMOVEVM) {
+		} else if (Configuration.getMode() == ModeType.REMOVEVM || Configuration.getMode() == ModeType.POWERONVM || Configuration.getMode() == ModeType.POWEROFFVM || Configuration.getMode() == ModeType.SHUTDOWNVM) {
 			if (!Configuration.hasOrganization()) {
 				usageError("An existing organization has to be selected", Configuration.getOptions());
 			}
@@ -199,7 +199,22 @@ public class Entry {
 			if (!Configuration.hasVM()) {
 				usageError("An existing VM has to be selected", Configuration.getOptions());
 			}
-			waitForTaskCompletion(client.removeVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getVM()));
+			Task t = null;
+			switch (Configuration.getMode()) {
+			case REMOVEVM:
+				t = client.removeVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getVM());
+				break;
+			case POWERONVM:
+				t = client.powerOnVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getVM());
+				break;
+			case POWEROFFVM:
+				t = client.powerOffVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getVM());
+				break;
+			case SHUTDOWNVM:
+				t = client.shutdownVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getVM());
+				break;
+			}
+			waitForTaskCompletion(t);
 		} else {
 			usageError("No mode was selected", Configuration.getOptions());
 		}
