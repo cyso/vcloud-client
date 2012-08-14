@@ -10,6 +10,7 @@ import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.UnrecognizedOptionException;
 
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -83,6 +84,8 @@ public class Entry {
 			System.exit(-1);
 		} catch (AlreadySelectedException ase) {
 			usageError(ase.getLocalizedMessage(), Configuration.getOptions());
+		} catch (UnrecognizedOptionException uoe) {
+			usageError(uoe.getLocalizedMessage(), Configuration.getOptions());
 		} catch (ParseException e) {
 			e.printStackTrace();
 			System.exit(-1);
