@@ -43,16 +43,13 @@ public class Formatter {
 		StringBuilder header = new StringBuilder();
 
 		header.append(String.format("%s version %s\n", Version.PROJECT_NAME, Version.RELEASE_VERSION));
-		int longest = header.length();
 		header.append(String.format("BUILD_VERSION: %s\n", Version.BUILD_VERSION));
-		header.insert(0, StringUtils.repeat("-", longest) + "\n");
-		header.append(StringUtils.repeat("-", longest));
 
 		return header.toString();
 	}
 
 	public static void printHeader() {
-		Formatter.printInfoLine(Formatter.getHeader());
+		Formatter.printBorderedInfo(Formatter.getHeader());
 	}
 
 	public static void waitForTaskCompletion(Task task) {
@@ -96,5 +93,32 @@ public class Formatter {
 
 	public static void printInfoLine(Object info) {
 		System.out.println(info);
+	}
+
+	public static void printBorderedInfo(Object info) {
+		Formatter.printBordered(info, false);
+	}
+
+	public static void printBorderedError(Object error) {
+		Formatter.printBordered(error, true);
+	}
+
+	private static void printBordered(Object msg, boolean error) {
+		String[] lines = msg.toString().split("\n");
+		int longest = 0;
+		for (String line : lines) {
+			if (line.length() > longest) {
+				longest = line.length();
+			}
+		}
+		if (error) {
+			Formatter.printErrorLine(StringUtils.repeat("-", longest));
+			Formatter.printError(msg);
+			Formatter.printErrorLine(StringUtils.repeat("-", longest));
+		} else {
+			Formatter.printInfoLine(StringUtils.repeat("-", longest));
+			Formatter.printInfo(msg);
+			Formatter.printInfoLine(StringUtils.repeat("-", longest));
+		}
 	}
 }

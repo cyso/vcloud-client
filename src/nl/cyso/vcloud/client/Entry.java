@@ -55,7 +55,7 @@ public class Entry {
 			Formatter.usageError("No credentials were set, or server uri was missing.", Configuration.getOptions());
 		}
 
-		Formatter.printInfo(Configuration.dumpToString());
+		Formatter.printBorderedInfo(Configuration.dumpToString());
 
 		vCloudClient client = new vCloudClient();
 		client.login(Configuration.getServer(), Configuration.getUsername(), Configuration.getPassword());
