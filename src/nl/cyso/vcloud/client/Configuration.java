@@ -288,6 +288,7 @@ public class Configuration {
 			modes.addOption(new Option("t", "poweroff-vm", false, "Stop an existing VM (hard shutdown)"));
 			modes.addOption(new Option("u", "shutdown-vm", false, "Shutdown an existing VM (soft shutdown)"));
 			modes.addOption(new Option("w", "resize-disk", false, "Resize the disk of an existing VM"));
+			modes.addOption(new Option("x", "consolidate-vm", false, "Consolidate all disks of an existing VM"));
 			modes.setRequired(true);
 			opt.addOptionGroup(modes);
 
@@ -336,6 +337,8 @@ public class Configuration {
 					Configuration.setMode(ModeType.SHUTDOWNVM);
 				} else if (opt.getLongOpt().equals("resize-disk")) {
 					Configuration.setMode(ModeType.RESIZEDISK);
+				} else if (opt.getLongOpt().equals("consolidate-vm")) {
+					Configuration.setMode(ModeType.CONSOLIDATEVM);
 				} else if (opt.getLongOpt().equals("ip")) {
 					try {
 						Configuration.setIp(cli.getOptionValue(opt.getLongOpt()));

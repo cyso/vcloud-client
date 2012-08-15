@@ -559,4 +559,21 @@ public class vCloudClient {
 
 		return t;
 	}
+
+	public Task consolidateVM(String org, String vdc, String vapp, String vm) {
+		this.vccPreCheck();
+
+		Task t = null;
+		try {
+			VM vmObj = this.getVM(org, vdc, vapp, vm);
+
+			t = vmObj.consolidate();
+		} catch (VCloudException e) {
+			System.err.println("An error occured while consolidating");
+			System.err.println(e.getLocalizedMessage());
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return t;
+	}
 }

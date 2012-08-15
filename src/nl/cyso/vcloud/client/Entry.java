@@ -189,7 +189,7 @@ public class Entry {
 			}
 
 			waitForTaskCompletion(client.addVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getCatalog(), Configuration.getTemplate(), Configuration.getFqdn(), Configuration.getDescription(), Configuration.getIp().getHostAddress(), Configuration.getNetwork()));
-		} else if (Configuration.getMode() == ModeType.REMOVEVM || Configuration.getMode() == ModeType.POWERONVM || Configuration.getMode() == ModeType.POWEROFFVM || Configuration.getMode() == ModeType.SHUTDOWNVM) {
+		} else if (Configuration.getMode() == ModeType.REMOVEVM || Configuration.getMode() == ModeType.POWERONVM || Configuration.getMode() == ModeType.POWEROFFVM || Configuration.getMode() == ModeType.SHUTDOWNVM || Configuration.getMode() == ModeType.CONSOLIDATEVM) {
 			if (!Configuration.hasOrganization()) {
 				usageError("An existing organization has to be selected", Configuration.getOptions());
 			}
@@ -216,6 +216,8 @@ public class Entry {
 			case SHUTDOWNVM:
 				t = client.shutdownVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getVM());
 				break;
+			case CONSOLIDATEVM:
+				t = client.consolidateVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getVM());
 			}
 			waitForTaskCompletion(t);
 		} else if (Configuration.getMode() == ModeType.RESIZEDISK) {
