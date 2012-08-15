@@ -225,7 +225,13 @@ public class vCloudClient {
 
 				Formatter.printInfoLine("\tNICs:");
 				for (VirtualNetworkCard net : vm.getNetworkCards()) {
-					Formatter.printInfoLine(String.format("\t\t%-14s - %15s - %s - %s", net.getIpAddress(), net.getItemResource().getAddress().getValue(), net.getItemResource().getConnection().get(0).getValue(), net.getItemResource().getDescription().getValue()));
+					String ip = null;
+					try {
+						ip = net.getIpAddress();
+					} catch (VCloudException e) {
+						ip = "?";
+					}
+					Formatter.printInfoLine(String.format("\t\t%-14s - %15s - %s - %s", ip, net.getItemResource().getAddress().getValue(), net.getItemResource().getConnection().get(0).getValue(), net.getItemResource().getDescription().getValue()));
 				}
 			}
 		} catch (VCloudException e) {
