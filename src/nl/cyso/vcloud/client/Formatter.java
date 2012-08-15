@@ -4,6 +4,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
+import org.apache.commons.lang.StringUtils;
 
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -36,6 +37,22 @@ public class Formatter {
 		Formatter.printInfoLine("     with FQDN \"new.vm.fqdn.com\", a description, and IP \"1.2.3.4\" in network \"vcloud-netw-1\"\n");
 		Formatter.printInfoLine(String.format(" %s -c cloud.cfg --organization=\"sample-org\" --vdc=\"sample-vdc\" --vapp=\"sample-vapp\" --vm=\"existing.vm.fqdn.com\" --remove-vm", Version.PROJECT_NAME));
 		Formatter.printInfoLine("  Remove an existing VM named \"existing.vm.fqdn.com\" from vApp \"sample-vapp\" of virtual data center \"sample-vdc\" of organization \"sample-org\".\n");
+	}
+
+	public static String getHeader() {
+		StringBuilder header = new StringBuilder();
+
+		header.append(String.format("%s version %s\n", Version.PROJECT_NAME, Version.RELEASE_VERSION));
+		int longest = header.length();
+		header.append(String.format("BUILD_VERSION: %s\n", Version.BUILD_VERSION));
+		header.insert(0, StringUtils.repeat("-", longest) + "\n");
+		header.append(StringUtils.repeat("-", longest));
+
+		return header.toString();
+	}
+
+	public static void printHeader() {
+		Formatter.printInfoLine(Formatter.getHeader());
 	}
 
 	public static void waitForTaskCompletion(Task task) {

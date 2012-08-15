@@ -43,14 +43,19 @@ public class Entry {
 			new HelpFormatter().printHelp("vcloud-client", Configuration.getOptions(), true);
 			Formatter.printExamples();
 			System.exit(0);
-		} else if (Configuration.getMode() == ModeType.VERSION) {
-			Formatter.printInfoLine(String.format("%s version %s\nBUILD_VERSION: %s", Version.PROJECT_NAME, Version.RELEASE_VERSION, Version.BUILD_VERSION));
+		}
+
+		Formatter.printHeader();
+
+		if (Configuration.getMode() == ModeType.VERSION) {
 			System.exit(0);
 		}
 
 		if (!Configuration.hasUsername() || !Configuration.hasPassword() || !Configuration.hasServer()) {
 			Formatter.usageError("No credentials were set, or server uri was missing.", Configuration.getOptions());
 		}
+
+		Formatter.printInfo(Configuration.dumpToString());
 
 		vCloudClient client = new vCloudClient();
 		client.login(Configuration.getServer(), Configuration.getUsername(), Configuration.getPassword());

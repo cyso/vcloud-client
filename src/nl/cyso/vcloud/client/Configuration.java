@@ -19,21 +19,10 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 public class Configuration {
-	/**
-	 * Login credentials : username; password; server;
-	 */
 
-	/**
-	 * Mode: mode; listType;
-	 */
-
-	/**
-	 * Selectors: organization, vdc, vapp, vm, catalog
-	 */
-
-	/**
-	 * User input: fqdn; description; template; ip; network; disk-name; disk-size;
-	 */
+	private static final String[] connection = new String[] { "server", "username" };
+	private static final String[] selectors = new String[] { "organization", "vdc", "vapp", "vm", "catalog" };
+	private static final String[] input = new String[] { "fqdn", "description", "template", "network", "ip", "disk-name", "disk-size" };
 
 	private static Map<String, Object> configuration = new HashMap<String, Object>();
 
@@ -388,5 +377,45 @@ public class Configuration {
 				Configuration.set(key, conf.getString(key));
 			}
 		}
+	}
+
+	public String toString() {
+		return Configuration.dumpToString();
+	}
+
+	protected static String dumpToString() {
+		StringBuilder dump = new StringBuilder();
+
+		dump.append(String.format("Selected operation: %s\n", Configuration.getMode().toString()));
+		if (Configuration.getMode() == ModeType.LIST) {
+			dump.append(String.format("Selected mode: %s\n", Configuration.getListType().toString()));
+		}
+
+		dump.append("Connection configuration: \n");
+		for (String in : Configuration.connection) {
+			if (Configuration.has(in)) {
+				dump.append(String.format("\t %s: %s\n", in, Configuration.valueOrNull(in)));
+			}
+		}
+
+		dump.append("Selector configuration: \n");
+		for (String in : Configuration.selectors) {
+			if (Configuration.has(in)) {
+				dump.append(String.format("\t %s: %s\n", in, Configuration.valueOrNull(in)));
+			}
+		}
+
+		dump.append("User input: \n");
+		for (String in : Configuration.input) {
+			if (Configuration.has(in)) {
+				if (in.equals("ip")) {
+					dump.append(String.format("\t %s: %s\n", in, ((InetAddress) Configuration.valueOrNull(in)).getHostAddress()));
+				} else {
+					dump.append(String.format("\t %s: %s\n", in, Configuration.valueOrNull(in)));
+				}
+			}
+		}
+
+		return dump.toString();
 	}
 }
