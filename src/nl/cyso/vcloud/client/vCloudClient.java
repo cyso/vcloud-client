@@ -68,7 +68,7 @@ public class vCloudClient {
 			this.vcc.registerScheme("https", 443, FakeSSLSocketFactory.getInstance());
 		} catch (Exception e) {
 			Formatter.printErrorLine("Unexpected error");
-			e.getStackTrace();
+			Formatter.printStackTrace(e);
 			System.exit(1);
 		}
 
@@ -478,7 +478,7 @@ public class vCloudClient {
 			}
 		} catch (VCloudException e) {
 			Formatter.printErrorLine("Unexpected error");
-			e.printStackTrace();
+			Formatter.printStackTrace(e);
 			System.exit(1);
 		}
 
@@ -605,7 +605,7 @@ public class vCloudClient {
 		} catch (VCloudException e) {
 			Formatter.printErrorLine("An error occured while resizing disks");
 			Formatter.printErrorLine(e.getLocalizedMessage());
-			e.printStackTrace();
+			Formatter.printStackTrace(e);
 			System.exit(1);
 		}
 
@@ -624,7 +624,7 @@ public class vCloudClient {
 		} catch (VCloudException e) {
 			Formatter.printErrorLine("An error occured while consolidating");
 			Formatter.printErrorLine(e.getLocalizedMessage());
-			e.printStackTrace();
+			Formatter.printStackTrace(e);
 			System.exit(1);
 		}
 		return t;

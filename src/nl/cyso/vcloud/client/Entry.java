@@ -29,7 +29,7 @@ public class Entry {
 		} catch (UnrecognizedOptionException uoe) {
 			Formatter.usageError(uoe.getLocalizedMessage(), Configuration.getOptions());
 		} catch (ParseException e) {
-			e.printStackTrace();
+			Formatter.printStackTrace(e);
 			System.exit(-1);
 		}
 

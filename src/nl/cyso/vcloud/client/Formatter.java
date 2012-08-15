@@ -121,4 +121,8 @@ public class Formatter {
 			Formatter.printInfoLine(StringUtils.repeat("-", longest));
 		}
 	}
+
+	public static void printStackTrace(Throwable e) {
+		e.printStackTrace(System.err);
+	}
 }
