@@ -10,6 +10,9 @@ import java.util.logging.Level;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import nl.cyso.vcloud.client.constants.vCloudConstants;
+import nl.cyso.vcloud.client.types.ManipulateType;
+
 import org.apache.commons.lang.NotImplementedException;
 
 import com.vmware.vcloud.api.rest.schema.GuestCustomizationSectionType;

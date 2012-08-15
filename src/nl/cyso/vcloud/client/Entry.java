@@ -2,6 +2,8 @@ package nl.cyso.vcloud.client;
 
 import java.util.concurrent.TimeoutException;
 
+import nl.cyso.vcloud.client.types.ModeType;
+
 import org.apache.commons.cli.AlreadySelectedException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
