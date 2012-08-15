@@ -31,6 +31,7 @@ import com.vmware.vcloud.api.rest.schema.ovf.RASDType;
 import com.vmware.vcloud.api.rest.schema.ovf.SectionType;
 import com.vmware.vcloud.sdk.Catalog;
 import com.vmware.vcloud.sdk.CatalogItem;
+import com.vmware.vcloud.sdk.FakeSSLSocketFactory;
 import com.vmware.vcloud.sdk.OrgNetwork;
 import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.Task;
