@@ -177,11 +177,12 @@ public class vCloudClient {
 
 			for (VM vm : vms) {
 				System.out.println(String.format("----\n%-20s - %s", vm.getReference().getName(), vm.getResource().getDescription()));
+				System.out.println(String.format("\tID: %s", vm.getReference().getId()));
 				System.out.println(String.format("\tCPUs: %s, RAM: %s MB", vm.getCpu().getNoOfCpus(), vm.getMemory().getMemorySize()));
 				System.out.println(String.format("\tOS: %s", vm.getOperatingSystemSection().getDescription().getValue()));
-				System.out.println(String.format("\tID: %s", vm.getReference().getHref()));
+
 				try {
-					System.out.println(String.format("\tVMware Tools: %s", vm.getRuntimeInfoSection().getVMWareTools().getVersion()));
+					System.out.println(String.format("\tVMware Tools: Version %s", vm.getRuntimeInfoSection().getVMWareTools().getVersion()));
 				} catch (NullPointerException ne) {
 					System.out.println(String.format("\tVMware Tools: No"));
 				}
@@ -190,6 +191,13 @@ public class vCloudClient {
 					System.out.println(String.format("\tConsole Link: http://vcloud.localhost/console.html?%s", vm.acquireTicket().getValue()));
 				} catch (VCloudException e) {
 					System.out.println(String.format("\tConsole Link: %s", e.getLocalizedMessage()));
+				}
+
+				try {
+					int length = vm.getVMDiskChainLength();
+					System.out.println(String.format("\tDisk Chain Length: %s %s", String.valueOf(length), (length == 0 ? "" : length == 1 ? "(Flat)" : "(Chained)")));
+				} catch (NullPointerException ne) {
+					System.out.println(String.format("\tDisk Chain Length: Unknown"));
 				}
 
 				System.out.println("\tDisks:");
