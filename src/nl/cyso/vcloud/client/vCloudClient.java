@@ -3,12 +3,16 @@ package nl.cyso.vcloud.client;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+
+import nl.cyso.vcloud.client.constants.vCloudConstants;
+import nl.cyso.vcloud.client.types.ManipulateType;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -28,6 +32,7 @@ import com.vmware.vcloud.api.rest.schema.ovf.RASDType;
 import com.vmware.vcloud.api.rest.schema.ovf.SectionType;
 import com.vmware.vcloud.sdk.Catalog;
 import com.vmware.vcloud.sdk.CatalogItem;
+import com.vmware.vcloud.sdk.FakeSSLSocketFactory;
 import com.vmware.vcloud.sdk.OrgNetwork;
 import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.Task;
@@ -62,8 +67,8 @@ public class vCloudClient {
 		try {
 			this.vcc.registerScheme("https", 443, FakeSSLSocketFactory.getInstance());
 		} catch (Exception e) {
-			System.err.println("Unexpected error");
-			System.err.println(e.getStackTrace());
+			Formatter.printErrorLine("Unexpected error");
+			e.getStackTrace();
 			System.exit(1);
 		}
 
@@ -72,13 +77,13 @@ public class vCloudClient {
 			this.vcc.login(username, password);
 			organizationsMap = this.vcc.getOrgRefsByName();
 		} catch (VCloudException ve) {
-			System.err.println("An error occurred while logging in:\n\n");
-			System.err.println(ve.getLocalizedMessage());
+			Formatter.printErrorLine("An error occurred while logging in:\n");
+			Formatter.printErrorLine(ve.getLocalizedMessage());
 			System.exit(1);
 		}
 
 		if (organizationsMap.isEmpty()) {
-			System.err.println("Invalid login for user " + username);
+			Formatter.printErrorLine("Invalid login for user " + username);
 			System.exit(1);
 		}
 	}
@@ -87,15 +92,23 @@ public class vCloudClient {
 		this.vccPreCheck();
 
 		try {
+			Formatter.printInfoLine("Retrieving Organizations...");
 			Collection<ReferenceType> orgs = this.vcc.getOrgRefs();
 
-			System.out.println("Organizations:\n");
+			List<String> o = new ArrayList<String>(orgs.size());
 			for (ReferenceType org : orgs) {
-				System.out.println(String.format("%s", org.getName()));
+				o.add(org.getName());
 			}
+			Collections.sort(o, String.CASE_INSENSITIVE_ORDER);
+
+			Formatter.printInfoLine("Organizations:");
+			for (String p : o) {
+				Formatter.printInfoLine("\t" + p);
+			}
+
 		} catch (VCloudException e) {
-			System.err.println("An error occured while retrieving organizations");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while retrieving organizations");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			System.exit(1);
 		}
 	}
@@ -103,12 +116,13 @@ public class vCloudClient {
 	public void listVDCs(String org) {
 		this.vccPreCheck();
 
+		Organization orgObj = this.getOrganization(org);
+
 		try {
-			System.out.println("Virtual Data Centers:\n");
-			ReferenceType orgRef = this.vcc.getOrgRefsByName().get(org);
-			for (ReferenceType vdcRef : Organization.getOrganizationByReference(this.vcc, orgRef).getVdcRefs()) {
+			Formatter.printInfoLine("This organization contains:\n\n");
+			for (ReferenceType vdcRef : orgObj.getVdcRefs()) {
 				Vdc vdc = Vdc.getVdcByReference(this.vcc, vdcRef);
-				System.out.println(String.format("%-20s - %s", vdcRef.getName(), vdc.getResource().getDescription()));
+				Formatter.printInfoLine(String.format("%-20s - %s", vdcRef.getName(), vdc.getResource().getDescription()));
 
 				for (ReferenceType netRef : vdc.getAvailableNetworkRefs()) {
 					OrgNetwork net = OrgNetwork.getOrgNetworkByReference(this.vcc, netRef);
@@ -123,12 +137,12 @@ public class vCloudClient {
 						i.append("?");
 					}
 
-					System.out.println(String.format("\t%-10s (%s)", net.getResource().getName(), i.toString()));
+					Formatter.printInfoLine(String.format("\t%-10s (%s)", net.getResource().getName(), i.toString()));
 				}
 			}
 		} catch (VCloudException e) {
-			System.err.println("An error occured while retrieving virtual data centers");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while retrieving virtual data centers");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			System.exit(1);
 		}
 	}
@@ -139,10 +153,10 @@ public class vCloudClient {
 		Vdc vdcObj = this.getVDC(org, vdc);
 
 		try {
-			System.out.println("vApps:\n");
+			Formatter.printInfoLine("This virtual data center contains:\n");
 			for (ReferenceType vappRef : vdcObj.getVappRefs()) {
 				Vapp vapp = Vapp.getVappByReference(this.vcc, vappRef);
-				System.out.println(String.format("%-20s - %s", vappRef.getName(), vapp.getResource().getDescription()));
+				Formatter.printInfoLine(String.format("%-20s - %s", vappRef.getName(), vapp.getResource().getDescription()));
 
 				for (VAppNetworkConfigurationType vn : vapp.getVappNetworkConfigurations()) {
 					StringBuilder i = new StringBuilder();
@@ -156,12 +170,12 @@ public class vCloudClient {
 					} catch (NullPointerException e) {
 						i.append("?");
 					}
-					System.out.println(String.format("\t%-10s (%s)", vn.getNetworkName(), i.toString()));
+					Formatter.printInfoLine(String.format("\t%-10s (%s)", vn.getNetworkName(), i.toString()));
 				}
 			}
 		} catch (VCloudException e) {
-			System.err.println("An error occured while retrieving vApps");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while retrieving vApps");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			System.exit(1);
 		}
 	}
@@ -172,51 +186,57 @@ public class vCloudClient {
 		Vapp vappObj = this.getVApp(org, vdc, vapp);
 
 		try {
-			System.out.println("VMs:");
+			Formatter.printInfoLine("This vApp contains:");
 			List<VM> vms = vappObj.getChildrenVms();
 
 			for (VM vm : vms) {
-				System.out.println(String.format("----\n%-20s - %s", vm.getReference().getName(), vm.getResource().getDescription()));
-				System.out.println(String.format("\tID: %s", vm.getReference().getId()));
-				System.out.println(String.format("\tCPUs: %s, RAM: %s MB", vm.getCpu().getNoOfCpus(), vm.getMemory().getMemorySize()));
-				System.out.println(String.format("\tOS: %s", vm.getOperatingSystemSection().getDescription().getValue()));
+				Formatter.printInfoLine(String.format("----\n%-20s - %s", vm.getReference().getName(), vm.getResource().getDescription()));
+				Formatter.printInfoLine(String.format("\tID: %s", vm.getReference().getId()));
+				Formatter.printInfoLine(String.format("\tCPUs: %s, RAM: %s MB", vm.getCpu().getNoOfCpus(), vm.getMemory().getMemorySize()));
+				Formatter.printInfoLine(String.format("\tOS: %s", vm.getOperatingSystemSection().getDescription().getValue()));
 
 				try {
-					System.out.println(String.format("\tVMware Tools: Version %s", vm.getRuntimeInfoSection().getVMWareTools().getVersion()));
+					Formatter.printInfoLine(String.format("\tVMware Tools: Version %s", vm.getRuntimeInfoSection().getVMWareTools().getVersion()));
 				} catch (NullPointerException ne) {
-					System.out.println(String.format("\tVMware Tools: No"));
+					Formatter.printInfoLine(String.format("\tVMware Tools: No"));
 				}
 
 				try {
-					System.out.println(String.format("\tConsole Link: http://vcloud.localhost/console.html?%s", vm.acquireTicket().getValue()));
+					Formatter.printInfoLine(String.format("\tConsole Link: http://vcloud.localhost/console.html?%s", vm.acquireTicket().getValue()));
 				} catch (VCloudException e) {
-					System.out.println(String.format("\tConsole Link: %s", e.getLocalizedMessage()));
+					Formatter.printInfoLine(String.format("\tConsole Link: %s", e.getLocalizedMessage()));
 				}
 
 				try {
 					int length = vm.getVMDiskChainLength();
-					System.out.println(String.format("\tDisk Chain Length: %s %s", String.valueOf(length), (length == 0 ? "" : length == 1 ? "(Flat)" : "(Chained)")));
+					Formatter.printInfoLine(String.format("\tDisk Chain Length: %s %s", String.valueOf(length), (length == 0 ? "" : length == 1 ? "(Flat)" : "(Chained)")));
 				} catch (NullPointerException ne) {
-					System.out.println(String.format("\tDisk Chain Length: Unknown"));
+					Formatter.printInfoLine(String.format("\tDisk Chain Length: Unknown"));
 				}
 
-				System.out.println("\tDisks:");
+				Formatter.printInfoLine("\tDisks:");
 				for (VirtualDisk disk : vm.getDisks()) {
 					if (disk.isHardDisk()) {
-						System.out.println(String.format("\t\t%-10s - %s MB", disk.getItemResource().getElementName().getValue(), disk.getHardDiskSize()));
+						Formatter.printInfoLine(String.format("\t\t%-10s - %s MB", disk.getItemResource().getElementName().getValue(), disk.getHardDiskSize()));
 					} else {
-						System.out.println(String.format("\t\t%-10s", disk.getItemResource().getElementName().getValue()));
+						Formatter.printInfoLine(String.format("\t\t%-10s", disk.getItemResource().getElementName().getValue()));
 					}
 				}
 
-				System.out.println("\tNICs:");
+				Formatter.printInfoLine("\tNICs:");
 				for (VirtualNetworkCard net : vm.getNetworkCards()) {
-					System.out.println(String.format("\t\t%-14s - %15s - %s - %s", net.getIpAddress(), net.getItemResource().getAddress().getValue(), net.getItemResource().getConnection().get(0).getValue(), net.getItemResource().getDescription().getValue()));
+					String ip = null;
+					try {
+						ip = net.getIpAddress();
+					} catch (VCloudException e) {
+						ip = "?";
+					}
+					Formatter.printInfoLine(String.format("\t\t%-14s - %15s - %s - %s", ip, net.getItemResource().getAddress().getValue(), net.getItemResource().getConnection().get(0).getValue(), net.getItemResource().getDescription().getValue()));
 				}
 			}
 		} catch (VCloudException e) {
-			System.err.println("An error occured while retrieving VMs");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while retrieving VMs");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			System.exit(1);
 		}
 	}
@@ -227,10 +247,10 @@ public class vCloudClient {
 		Organization orgObj = this.getOrganization(org);
 
 		try {
-			System.out.println("Catalogs:\n");
+			Formatter.printInfoLine("Catalogs:\n");
 			for (ReferenceType catalogRef : orgObj.getCatalogRefs()) {
 				Catalog catalog = Catalog.getCatalogByReference(this.vcc, catalogRef);
-				System.out.println(String.format("----\n%-20s - %s", catalogRef.getName(), catalog.getResource().getDescription()));
+				Formatter.printInfoLine(String.format("----\n%-20s - %s", catalogRef.getName(), catalog.getResource().getDescription()));
 
 				List<CatalogItem> vapps = new ArrayList<CatalogItem>();
 				List<CatalogItem> media = new ArrayList<CatalogItem>();
@@ -245,18 +265,18 @@ public class vCloudClient {
 					}
 				}
 
-				System.out.println("\tvApps:");
+				Formatter.printInfoLine("\tvApps:");
 				for (CatalogItem item : vapps) {
-					System.out.println(String.format("\t\t%-20s - %s", item.getReference().getName(), item.getResource().getDescription().replace("\n", ", ")));
+					Formatter.printInfoLine(String.format("\t\t%-20s - %s", item.getReference().getName(), item.getResource().getDescription().replace("\n", ", ")));
 				}
-				System.out.println("\tvMedia:");
+				Formatter.printInfoLine("\tvMedia:");
 				for (CatalogItem item : media) {
-					System.out.println(String.format("\t\t%-20s - %s", item.getReference().getName(), item.getResource().getDescription().replace("\n", ", ")));
+					Formatter.printInfoLine(String.format("\t\t%-20s - %s", item.getReference().getName(), item.getResource().getDescription().replace("\n", ", ")));
 				}
 			}
 		} catch (VCloudException e) {
-			System.err.println("An error occured while retrieving Catalogs");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while retrieving Catalogs");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			System.exit(1);
 		}
 	}
@@ -264,18 +284,22 @@ public class vCloudClient {
 	private Organization getOrganization(String org) {
 		this.vccPreCheck();
 
+		Formatter.printInfoLine("Retrieving organization: " + org);
+
 		Organization orgObj = null;
 		try {
 			ReferenceType orgRef = this.vcc.getOrgRefByName(org);
 			orgObj = Organization.getOrganizationByReference(this.vcc, orgRef);
 		} catch (VCloudException e) {
-			System.err.println("An error occured while selecting the organization");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while selecting the organization");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			System.exit(1);
 		} catch (NullPointerException ne) {
-			System.err.println("Organization does not exist");
+			Formatter.printErrorLine("Organization does not exist");
 			System.exit(1);
 		}
+
+		Formatter.printInfoLine("Retrieved organization");
 
 		return orgObj;
 	}
@@ -289,13 +313,15 @@ public class vCloudClient {
 			ReferenceType vdcRef = o.getVdcRefByName(vdc);
 			vdcObj = Vdc.getVdcByReference(this.vcc, vdcRef);
 		} catch (VCloudException e) {
-			System.err.println("An error occured while selecting the virtual data center");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while selecting the virtual data center");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			System.exit(1);
 		} catch (NullPointerException ne) {
-			System.err.println("Virtual data center does not exist");
+			Formatter.printErrorLine("Virtual data center does not exist");
 			System.exit(1);
 		}
+
+		Formatter.printInfoLine("Retrieved virtual data center: " + vdc);
 
 		return vdcObj;
 	}
@@ -309,13 +335,15 @@ public class vCloudClient {
 
 			vappObj = Vapp.getVappByReference(this.vcc, vdcObj.getVappRefByName(vapp));
 		} catch (VCloudException e) {
-			System.err.println("An error occured while retrieving vApp");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while retrieving vApp");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			System.exit(1);
 		} catch (NullPointerException ne) {
-			System.err.println("vApp does not exist");
+			Formatter.printErrorLine("vApp does not exist");
 			System.exit(1);
 		}
+
+		Formatter.printInfoLine("Retrieved vApp: " + vapp);
 
 		return vappObj;
 	}
@@ -333,21 +361,25 @@ public class vCloudClient {
 				}
 			}
 		} catch (VCloudException e) {
-			System.err.println("An error occured while retrieving VM");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while retrieving VM");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			System.exit(1);
 		}
 
 		if (vmObj == null) {
-			System.err.println("VM does not exist");
+			Formatter.printErrorLine("VM does not exist");
 			System.exit(1);
 		}
+
+		Formatter.printInfoLine("Retrieved VM: " + vm);
 
 		return vmObj;
 	}
 
 	private CatalogItem getCatalogItem(String org, String catalog, String item, String type) {
 		this.vccPreCheck();
+
+		Formatter.printInfoLine("Retrieving catalog: " + catalog);
 
 		Catalog cat = null;
 		try {
@@ -359,30 +391,32 @@ public class vCloudClient {
 				}
 			}
 		} catch (VCloudException e) {
-			System.err.println("An error occured while retrieving Catalog");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while retrieving Catalog");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			System.exit(1);
 		}
 
 		if (cat == null) {
-			System.err.println("Catalog not found");
+			Formatter.printErrorLine("Catalog not found");
 			System.exit(1);
 		}
+
+		Formatter.printInfoLine("Retrieving catalog item: " + item);
 
 		CatalogItem itemObj = null;
 		try {
 			itemObj = CatalogItem.getCatalogItemByReference(this.vcc, cat.getCatalogItemRefByName(item));
 
 			if (!itemObj.getEntityReference().getType().equals(type)) {
-				System.err.println("Catalog item was found, but was not of the requested type");
+				Formatter.printErrorLine("Catalog item was found, but was not of the requested type");
 				System.exit(1);
 			}
 		} catch (VCloudException e) {
-			System.err.println("An error occured while retrieving vApp");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while retrieving vApp");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			System.exit(1);
 		} catch (NullPointerException ne) {
-			System.err.println("Catalog item not found");
+			Formatter.printErrorLine("Catalog item not found");
 			System.exit(1);
 		}
 
@@ -398,23 +432,27 @@ public class vCloudClient {
 		try {
 			switch (action) {
 			case POWERON:
+				Formatter.printInfoLine("Powering on VM: " + vm);
 				t = vmObj.powerOn();
 				break;
 			case POWEROFF:
+				Formatter.printInfoLine("Powering off VM: " + vm);
 				t = vmObj.undeploy(UndeployPowerActionType.POWEROFF);
 				break;
 			case SHUTDOWN:
+				Formatter.printInfoLine("Shutting down VM: " + vm);
 				t = vmObj.undeploy(UndeployPowerActionType.SHUTDOWN);
 				break;
 			case REMOVE:
+				Formatter.printInfoLine("Removing VM: " + vm);
 				t = vmObj.delete();
 				break;
 			default:
 				throw new NotImplementedException("Manipulation type not implemented: " + action.toString());
 			}
 		} catch (VCloudException e) {
-			System.err.println("An error occured while manipulating VM");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while manipulating VM");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			System.exit(1);
 		}
 
@@ -428,23 +466,28 @@ public class vCloudClient {
 		CatalogItem itemObj = this.getCatalogItem(org, catalog, template, vCloudConstants.MediaType.VAPP_TEMPLATE);
 		VappTemplate templateObj = null;
 		VappTemplate vmObj = null;
+
+		Formatter.printInfoLine("Retrieving requested VM template: " + template);
 		try {
 			templateObj = VappTemplate.getVappTemplateByReference(this.vcc, itemObj.getEntityReference());
+
 			for (VappTemplate child : templateObj.getChildren()) {
 				if (child.isVm()) {
 					vmObj = child;
 				}
 			}
 		} catch (VCloudException e) {
-			System.err.println("Unexpected error");
+			Formatter.printErrorLine("Unexpected error");
 			e.printStackTrace();
 			System.exit(1);
 		}
 
 		if (vmObj == null) {
-			System.err.println("Could not find VM in specified vApp");
+			Formatter.printErrorLine("Could not find template VM");
 			System.exit(1);
 		}
+
+		Formatter.printInfoLine("Building vApp recompose request");
 
 		// Change vApp settings
 		RecomposeVAppParamsType recomp = new RecomposeVAppParamsType();
@@ -482,13 +525,14 @@ public class vCloudClient {
 		s.setInstantiationParams(instant);
 		sources.add(s);
 
+		Formatter.printInfoLine("Recomposing vApp");
 		// Do it
 		Task t = null;
 		try {
 			t = vappObj.recomposeVapp(recomp);
 		} catch (VCloudException e) {
-			System.err.println("An error occured while recomposing vApp");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while recomposing vApp");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			System.exit(1);
 		}
 
@@ -522,11 +566,11 @@ public class vCloudClient {
 			try {
 				length = vmObj.getVMDiskChainLength();
 			} catch (NullPointerException ne) {
-				System.err.println("Could not retrieve VM disk chain length. Operation will continue, but may fail.");
+				Formatter.printErrorLine("Could not retrieve VM disk chain length. Operation will continue, but may fail.");
 			}
 
 			if (length > 1) {
-				System.err.println("VM has a disk chain length larger than one. This VM needs to be consolidated before the disk can be extended.");
+				Formatter.printErrorLine("VM has a disk chain length larger than one. This VM needs to be consolidated before the disk can be extended.");
 				System.exit(1);
 			}
 
@@ -559,8 +603,8 @@ public class vCloudClient {
 			t = vmObj.updateDisks(newDisks);
 
 		} catch (VCloudException e) {
-			System.err.println("An error occured while resizing disks");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while resizing disks");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -575,10 +619,11 @@ public class vCloudClient {
 		try {
 			VM vmObj = this.getVM(org, vdc, vapp, vm);
 
+			Formatter.printInfoLine("Consolidating VM: " + vm);
 			t = vmObj.consolidate();
 		} catch (VCloudException e) {
-			System.err.println("An error occured while consolidating");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("An error occured while consolidating");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			e.printStackTrace();
 			System.exit(1);
 		}

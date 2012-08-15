@@ -117,7 +117,7 @@ java -Xdebug -Xrunjdwp:transport=dt_socket,address=8998,server=y -classpath ${pr
 				<attribute name="Implementation-Title" value="${executable}"/>
 				<attribute name="Implementation-Version" value="0.1"/>
 				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="Sealed" value="true"/>
+				<attribute name="Sealed" value="false"/>
 				<attribute name="Class-Path" value="${jar.class.path}"/>
 				<attribute name="Main-Class" value="nl.cyso.vcloud.client.Entry"/>
 			</manifest>
