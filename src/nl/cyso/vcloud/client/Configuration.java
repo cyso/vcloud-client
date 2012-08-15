@@ -1,5 +1,6 @@
 package nl.cyso.vcloud.client;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class Configuration {
 	 */
 
 	/**
-	 * User input: fqdn; description; template; ip; network;
+	 * User input: fqdn; description; template; ip; network; disk-name; disk-size;
 	 */
 
 	private static Map<String, Object> configuration = new HashMap<String, Object>();
@@ -235,6 +236,34 @@ public class Configuration {
 		Configuration.set("network", network);
 	}
 
+	protected static boolean hasDiskName() {
+		return Configuration.has("disk-name");
+	}
+
+	protected static String getDiskName() {
+		return (String) Configuration.valueOrNull("disk-name");
+	}
+
+	protected static void setDiskName(String diskname) {
+		Configuration.set("disk-name", diskname);
+	}
+
+	protected static boolean hasDiskSize() {
+		return Configuration.has("disk-size");
+	}
+
+	protected static BigInteger getDiskSize() {
+		return (BigInteger) Configuration.valueOrNull("disk-size");
+	}
+
+	protected static void setDiskSize(BigInteger disksize) {
+		Configuration.set("disk-size", disksize);
+	}
+
+	protected static void setDiskSize(String disksize) {
+		Configuration.set("disk-size", new BigInteger(disksize));
+	}
+
 	@SuppressWarnings("static-access")
 	protected static Options getOptions() {
 		if (Configuration.options == null) {
@@ -258,6 +287,7 @@ public class Configuration {
 			modes.addOption(new Option("s", "poweron-vm", false, "Start an existing VM"));
 			modes.addOption(new Option("t", "poweroff-vm", false, "Stop an existing VM (hard shutdown)"));
 			modes.addOption(new Option("u", "shutdown-vm", false, "Shutdown an existing VM (soft shutdown)"));
+			modes.addOption(new Option("w", "resize-disk", false, "Resize the disk of an existing VM"));
 			modes.setRequired(true);
 			opt.addOptionGroup(modes);
 
@@ -274,6 +304,9 @@ public class Configuration {
 			opt.addOption(OptionBuilder.withLongOpt("template").hasArg().withArgName("TEMPLATE").withDescription("Template of object to create").create());
 			opt.addOption(OptionBuilder.withLongOpt("ip").hasArg().withArgName("IP").withDescription("IP of the object to create").create());
 			opt.addOption(OptionBuilder.withLongOpt("network").hasArg().withArgName("NETWORK").withDescription("Network of the object to create").create());
+
+			opt.addOption(OptionBuilder.withLongOpt("disk-name").hasArg().withArgName("DISK").withDescription("Name of disk to resize").create());
+			opt.addOption(OptionBuilder.withLongOpt("disk-size").hasArg().withArgName("SIZE").withDescription("New size of disk in MB").create());
 
 			Configuration.options = opt;
 		}
@@ -301,12 +334,16 @@ public class Configuration {
 					Configuration.setMode(ModeType.POWEROFFVM);
 				} else if (opt.getLongOpt().equals("shutdown-vm")) {
 					Configuration.setMode(ModeType.SHUTDOWNVM);
+				} else if (opt.getLongOpt().equals("resize-disk")) {
+					Configuration.setMode(ModeType.RESIZEDISK);
 				} else if (opt.getLongOpt().equals("ip")) {
 					try {
 						Configuration.setIp(cli.getOptionValue(opt.getLongOpt()));
 					} catch (UnknownHostException uhe) {
 						Configuration.setIp((InetAddress) null);
 					}
+				} else if (opt.getLongOpt().equals("disk-size")) {
+					Configuration.setDiskSize(cli.getOptionValue(opt.getLongOpt()));
 				} else {
 					Configuration.set(opt.getLongOpt(), cli.getOptionValue(opt.getLongOpt()));
 				}

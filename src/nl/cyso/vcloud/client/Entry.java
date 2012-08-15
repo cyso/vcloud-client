@@ -218,6 +218,26 @@ public class Entry {
 				break;
 			}
 			waitForTaskCompletion(t);
+		} else if (Configuration.getMode() == ModeType.RESIZEDISK) {
+			if (!Configuration.hasOrganization()) {
+				usageError("An existing organization has to be selected", Configuration.getOptions());
+			}
+			if (!Configuration.hasVDC()) {
+				usageError("An existing virtual data center has to be selected", Configuration.getOptions());
+			}
+			if (!Configuration.hasVApp()) {
+				usageError("An existing vApp has to be selected", Configuration.getOptions());
+			}
+			if (!Configuration.hasVM()) {
+				usageError("An existing VM has to be selected", Configuration.getOptions());
+			}
+			if (!Configuration.hasDiskName()) {
+				usageError("An existing disk has to be selected", Configuration.getOptions());
+			}
+			if (!Configuration.hasDiskSize()) {
+				usageError("An new disk size has to be specified", Configuration.getOptions());
+			}
+			waitForTaskCompletion(client.resizeVMDisks(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getVM(), Configuration.getDiskName(), Configuration.getDiskSize()));
 		} else {
 			usageError("No mode was selected", Configuration.getOptions());
 		}

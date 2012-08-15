@@ -1,5 +1,6 @@
 package nl.cyso.vcloud.client;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.NotImplementedException;
 
@@ -20,7 +22,9 @@ import com.vmware.vcloud.api.rest.schema.RecomposeVAppParamsType;
 import com.vmware.vcloud.api.rest.schema.ReferenceType;
 import com.vmware.vcloud.api.rest.schema.SourcedCompositionItemParamType;
 import com.vmware.vcloud.api.rest.schema.VAppNetworkConfigurationType;
+import com.vmware.vcloud.api.rest.schema.ovf.CimString;
 import com.vmware.vcloud.api.rest.schema.ovf.MsgType;
+import com.vmware.vcloud.api.rest.schema.ovf.RASDType;
 import com.vmware.vcloud.api.rest.schema.ovf.SectionType;
 import com.vmware.vcloud.sdk.Catalog;
 import com.vmware.vcloud.sdk.CatalogItem;
@@ -175,6 +179,7 @@ public class vCloudClient {
 				System.out.println(String.format("----\n%-20s - %s", vm.getReference().getName(), vm.getResource().getDescription()));
 				System.out.println(String.format("\tCPUs: %s, RAM: %s MB", vm.getCpu().getNoOfCpus(), vm.getMemory().getMemorySize()));
 				System.out.println(String.format("\tOS: %s", vm.getOperatingSystemSection().getDescription().getValue()));
+				System.out.println(String.format("\tID: %s", vm.getReference().getHref()));
 				try {
 					System.out.println(String.format("\tVMware Tools: %s", vm.getRuntimeInfoSection().getVMWareTools().getVersion()));
 				} catch (NullPointerException ne) {
@@ -496,5 +501,62 @@ public class vCloudClient {
 
 	public Task shutdownVM(String org, String vdc, String vapp, String vm) {
 		return this.manipulateVM(org, vdc, vapp, vm, ManipulateType.SHUTDOWN);
+	}
+
+	public Task resizeVMDisks(String org, String vdc, String vapp, String vm, String diskname, BigInteger disksize) {
+		this.vccPreCheck();
+
+		Task t = null;
+		try {
+			VM vmObj = this.getVM(org, vdc, vapp, vm);
+
+			int length = 0;
+			try {
+				length = vmObj.getVMDiskChainLength();
+			} catch (NullPointerException ne) {
+				System.err.println("Could not retrieve VM disk chain length. Operation will continue, but may fail.");
+			}
+
+			if (length > 1) {
+				System.err.println("VM has a disk chain length larger than one. This VM needs to be consolidated before the disk can be extended.");
+				System.exit(1);
+			}
+
+			List<VirtualDisk> disks = vmObj.getDisks();
+			List<VirtualDisk> newDisks = new ArrayList<VirtualDisk>(disks.size());
+			for (VirtualDisk disk : disks) {
+				if (disk.isHardDisk()) {
+					RASDType d = new RASDType();
+					d.setElementName(disk.getItemResource().getElementName());
+					d.setResourceType(disk.getItemResource().getResourceType());
+					d.setInstanceID(disk.getItemResource().getInstanceID());
+
+					for (int i = 0; i < disk.getItemResource().getHostResource().size(); i++) {
+						CimString resource = disk.getItemResource().getHostResource().get(i);
+						d.getHostResource().add(resource);
+						if (disk.getItemResource().getElementName().getValue().equals(diskname)) {
+							if (disk.getHardDiskSize().compareTo(disksize) == 1) {
+								throw new VCloudException("Failed to resize disk, shrinking disks is not supported");
+							}
+							for (QName key : resource.getOtherAttributes().keySet()) {
+								if (key.getLocalPart().equals("capacity")) {
+									resource.getOtherAttributes().put(key, disksize.toString());
+								}
+							}
+						}
+					}
+					newDisks.add(new VirtualDisk(d));
+				}
+			}
+			t = vmObj.updateDisks(newDisks);
+
+		} catch (VCloudException e) {
+			System.err.println("An error occured while resizing disks");
+			System.err.println(e.getLocalizedMessage());
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		return t;
 	}
 }
