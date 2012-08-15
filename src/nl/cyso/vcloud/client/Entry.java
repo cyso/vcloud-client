@@ -1,6 +1,5 @@
 package nl.cyso.vcloud.client;
 
-
 import nl.cyso.vcloud.client.types.ModeType;
 
 import org.apache.commons.cli.AlreadySelectedException;
@@ -45,7 +44,7 @@ public class Entry {
 			Formatter.printExamples();
 			System.exit(0);
 		} else if (Configuration.getMode() == ModeType.VERSION) {
-			System.out.println(String.format("%s version %s\nBUILD_VERSION: %s", Version.PROJECT_NAME, Version.RELEASE_VERSION, Version.BUILD_VERSION));
+			Formatter.printInfoLine(String.format("%s version %s\nBUILD_VERSION: %s", Version.PROJECT_NAME, Version.RELEASE_VERSION, Version.BUILD_VERSION));
 			System.exit(0);
 		}
 
@@ -99,7 +98,7 @@ public class Entry {
 				client.listVMs(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp());
 				break;
 			default:
-				System.err.println("Not yet implemented");
+				Formatter.printErrorLine("Not yet implemented");
 				break;
 			}
 		} else if (Configuration.getMode() == ModeType.ADDVM) {

@@ -362,8 +362,8 @@ public class Configuration {
 		try {
 			conf = new PropertiesConfiguration(filename);
 		} catch (ConfigurationException e) {
-			System.err.println("Failed to load configuration file");
-			System.err.println(e.getLocalizedMessage());
+			Formatter.printErrorLine("Failed to load configuration file");
+			Formatter.printErrorLine(e.getLocalizedMessage());
 			return;
 		}
 
