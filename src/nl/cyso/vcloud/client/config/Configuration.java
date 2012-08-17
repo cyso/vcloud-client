@@ -163,6 +163,18 @@ public class Configuration {
 		Configuration.set("listType", listType);
 	}
 
+	public static boolean hasHelpType() {
+		return Configuration.has("help-type");
+	}
+
+	public static ModeType getHelpType() {
+		return (ModeType) Configuration.valueOrNull("help-type");
+	}
+
+	public static void setHelpType(ModeType mode) {
+		Configuration.set("help-type", mode);
+	}
+
 	public static boolean hasFqdn() {
 		return Configuration.has("fqdn");
 	}
@@ -311,6 +323,9 @@ public class Configuration {
 			if (cli.hasOption(opt.getLongOpt())) {
 				if (opt.getLongOpt().equals("help")) {
 					Configuration.setMode(ModeType.HELP);
+					if (cli.getOptionValue(opt.getLongOpt()) != null) {
+						Configuration.setHelpType(ModeType.valueOf(cli.getOptionValue(opt.getLongOpt()).toUpperCase()));
+					}
 				} else if (opt.getLongOpt().equals("version")) {
 					Configuration.setMode(ModeType.VERSION);
 				} else if (opt.getLongOpt().equals("list")) {
