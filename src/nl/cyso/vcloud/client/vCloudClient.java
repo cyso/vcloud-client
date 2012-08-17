@@ -515,6 +515,7 @@ public class vCloudClient {
 		GuestCustomizationSectionType guest = new GuestCustomizationSectionType();
 		guest.setInfo(new MsgType());
 		guest.setComputerName(fqdnParts[0]);
+		guest.setEnabled(true);
 		sections.add(new ObjectFactory().createGuestCustomizationSection(guest));
 
 		// Whip it all up
