@@ -1,4 +1,4 @@
-package nl.cyso.vcloud.client;
+package nl.cyso.vcloud.client.config;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import nl.cyso.vcloud.client.Formatter;
 import nl.cyso.vcloud.client.types.ListType;
 import nl.cyso.vcloud.client.types.ModeType;
 
@@ -26,17 +27,15 @@ public class Configuration {
 
 	private static Map<String, Object> configuration = new HashMap<String, Object>();
 
-	private static Options options = null;
-
-	private static boolean has(String key) {
+	protected static boolean has(String key) {
 		return Configuration.configuration.containsKey(key);
 	}
 
-	private static void set(String key, Object value) {
+	protected static void set(String key, Object value) {
 		Configuration.configuration.put(key, value);
 	}
 
-	private static Object valueOrNull(String key) {
+	protected static Object valueOrNull(String key) {
 		if (Configuration.configuration.containsKey(key)) {
 			return Configuration.configuration.get(key);
 		} else {
@@ -44,215 +43,215 @@ public class Configuration {
 		}
 	}
 
-	protected static boolean hasUsername() {
+	public static boolean hasUsername() {
 		return Configuration.has("username");
 	}
 
-	protected static String getUsername() {
+	public static String getUsername() {
 		return (String) Configuration.valueOrNull("username");
 	}
 
-	protected static void setUsername(String username) {
+	public static void setUsername(String username) {
 		Configuration.set("username", username);
 	}
 
-	protected static boolean hasPassword() {
+	public static boolean hasPassword() {
 		return Configuration.has("password");
 	}
 
-	protected static String getPassword() {
+	public static String getPassword() {
 		return (String) Configuration.valueOrNull("password");
 	}
 
-	protected static void setPassword(String password) {
+	public static void setPassword(String password) {
 		Configuration.set("password", password);
 	}
 
-	protected static boolean hasServer() {
+	public static boolean hasServer() {
 		return Configuration.has("server");
 	}
 
-	protected static String getServer() {
+	public static String getServer() {
 		return (String) Configuration.valueOrNull("server");
 	}
 
-	protected static void setServer(String server) {
+	public static void setServer(String server) {
 		Configuration.set("server", server);
 	}
 
-	protected static boolean hasMode() {
+	public static boolean hasMode() {
 		return Configuration.has("mode");
 	}
 
-	protected static ModeType getMode() {
+	public static ModeType getMode() {
 		return (ModeType) Configuration.valueOrNull("mode");
 	}
 
-	protected static void setMode(ModeType mode) {
+	public static void setMode(ModeType mode) {
 		Configuration.set("mode", mode);
 	}
 
-	protected static boolean hasVDC() {
+	public static boolean hasVDC() {
 		return Configuration.has("vdc");
 	}
 
-	protected static String getVDC() {
+	public static String getVDC() {
 		return (String) Configuration.valueOrNull("vdc");
 	}
 
-	protected static void setVDC(String vdc) {
+	public static void setVDC(String vdc) {
 		Configuration.set("vdc", vdc);
 	}
 
-	protected static boolean hasVApp() {
+	public static boolean hasVApp() {
 		return Configuration.has("vapp");
 	}
 
-	protected static String getVApp() {
+	public static String getVApp() {
 		return (String) Configuration.valueOrNull("vapp");
 	}
 
-	protected static void setVApp(String vapp) {
+	public static void setVApp(String vapp) {
 		Configuration.set("vapp", vapp);
 	}
 
-	protected static boolean hasVM() {
+	public static boolean hasVM() {
 		return Configuration.has("vm");
 	}
 
-	protected static String getVM() {
+	public static String getVM() {
 		return (String) Configuration.valueOrNull("vm");
 	}
 
-	protected static void setVM(String vm) {
+	public static void setVM(String vm) {
 		Configuration.set("vm", vm);
 	}
 
-	protected static boolean hasCatalog() {
+	public static boolean hasCatalog() {
 		return Configuration.has("catalog");
 	}
 
-	protected static String getCatalog() {
+	public static String getCatalog() {
 		return (String) Configuration.valueOrNull("catalog");
 	}
 
-	protected static void setCatalog(String catalog) {
+	public static void setCatalog(String catalog) {
 		Configuration.set("catalog", catalog);
 	}
 
-	protected static boolean hasOrganization() {
+	public static boolean hasOrganization() {
 		return Configuration.has("organization");
 	}
 
-	protected static String getOrganization() {
+	public static String getOrganization() {
 		return (String) Configuration.valueOrNull("organization");
 	}
 
-	protected static void setOrganization(String organization) {
+	public static void setOrganization(String organization) {
 		Configuration.set("organization", organization);
 	}
 
-	protected static boolean hasListType() {
+	public static boolean hasListType() {
 		return Configuration.has("listType");
 	}
 
-	protected static ListType getListType() {
+	public static ListType getListType() {
 		return (ListType) Configuration.valueOrNull("listType");
 	}
 
-	protected static void setListType(ListType listType) {
+	public static void setListType(ListType listType) {
 		Configuration.set("listType", listType);
 	}
 
-	protected static boolean hasFqdn() {
+	public static boolean hasFqdn() {
 		return Configuration.has("fqdn");
 	}
 
-	protected static String getFqdn() {
+	public static String getFqdn() {
 		return (String) Configuration.valueOrNull("fqdn");
 	}
 
-	protected static void setFqdn(String fqdn) {
+	public static void setFqdn(String fqdn) {
 		Configuration.set("fqdn", fqdn);
 	}
 
-	protected static boolean hasDescription() {
+	public static boolean hasDescription() {
 		return Configuration.has("description");
 	}
 
-	protected static String getDescription() {
+	public static String getDescription() {
 		return (String) Configuration.valueOrNull("description");
 	}
 
-	protected static void setDescription(String description) {
+	public static void setDescription(String description) {
 		Configuration.set("description", description);
 	}
 
-	protected static boolean hasTemplate() {
+	public static boolean hasTemplate() {
 		return Configuration.has("template");
 	}
 
-	protected static String getTemplate() {
+	public static String getTemplate() {
 		return (String) Configuration.valueOrNull("template");
 	}
 
-	protected static void setTemplate(String template) {
+	public static void setTemplate(String template) {
 		Configuration.set("template", template);
 	}
 
-	protected static boolean hasIp() {
+	public static boolean hasIp() {
 		return Configuration.has("ip");
 	}
 
-	protected static InetAddress getIp() {
+	public static InetAddress getIp() {
 		return (InetAddress) Configuration.valueOrNull("ip");
 	}
 
-	protected static void setIp(InetAddress ip) {
+	public static void setIp(InetAddress ip) {
 		Configuration.set("ip", ip);
 	}
 
-	protected static void setIp(String ip) throws UnknownHostException {
+	public static void setIp(String ip) throws UnknownHostException {
 		Configuration.set("ip", InetAddress.getByName(ip));
 	}
 
-	protected static boolean hasNetwork() {
+	public static boolean hasNetwork() {
 		return Configuration.has("network");
 	}
 
-	protected static String getNetwork() {
+	public static String getNetwork() {
 		return (String) Configuration.valueOrNull("network");
 	}
 
-	protected static void setNetwork(String network) {
+	public static void setNetwork(String network) {
 		Configuration.set("network", network);
 	}
 
-	protected static boolean hasDiskName() {
+	public static boolean hasDiskName() {
 		return Configuration.has("disk-name");
 	}
 
-	protected static String getDiskName() {
+	public static String getDiskName() {
 		return (String) Configuration.valueOrNull("disk-name");
 	}
 
-	protected static void setDiskName(String diskname) {
+	public static void setDiskName(String diskname) {
 		Configuration.set("disk-name", diskname);
 	}
 
-	protected static boolean hasDiskSize() {
+	public static boolean hasDiskSize() {
 		return Configuration.has("disk-size");
 	}
 
-	protected static BigInteger getDiskSize() {
+	public static BigInteger getDiskSize() {
 		return (BigInteger) Configuration.valueOrNull("disk-size");
 	}
 
-	protected static void setDiskSize(BigInteger disksize) {
+	public static void setDiskSize(BigInteger disksize) {
 		Configuration.set("disk-size", disksize);
 	}
 
-	protected static void setDiskSize(String disksize) {
+	public static void setDiskSize(String disksize) {
 		Configuration.set("disk-size", new BigInteger(disksize));
 	}
 
@@ -307,7 +306,7 @@ public class Configuration {
 		return Configuration.options;
 	}
 
-	protected static void load(CommandLine cli) {
+	public static void load(CommandLine cli) {
 		for (Option opt : cli.getOptions()) {
 			if (cli.hasOption(opt.getLongOpt())) {
 				if (opt.getLongOpt().equals("help")) {
@@ -346,7 +345,7 @@ public class Configuration {
 		}
 	}
 
-	protected static void loadFile(String filename) {
+	public static void loadFile(String filename) {
 		org.apache.commons.configuration.Configuration conf = null;
 		try {
 			conf = new PropertiesConfiguration(filename);
@@ -383,7 +382,7 @@ public class Configuration {
 		return Configuration.dumpToString();
 	}
 
-	protected static String dumpToString() {
+	public static String dumpToString() {
 		StringBuilder dump = new StringBuilder();
 
 		dump.append(String.format("Selected operation: %s\n", Configuration.getMode().toString()));
