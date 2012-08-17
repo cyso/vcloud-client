@@ -11,17 +11,19 @@ import nl.cyso.vcloud.client.Formatter;
 import nl.cyso.vcloud.client.types.ListType;
 import nl.cyso.vcloud.client.types.ModeType;
 
+import org.apache.commons.cli.AlreadySelectedException;
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.OptionGroup;
-import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 public class Configuration {
 
-	private static final String[] connection = new String[] { "server", "username" };
+	private static final String[] connection = new String[] { "server", "username", "password" };
 	private static final String[] selectors = new String[] { "organization", "vdc", "vapp", "vm", "catalog" };
 	private static final String[] input = new String[] { "fqdn", "description", "template", "network", "ip", "disk-name", "disk-size" };
 
@@ -267,55 +269,31 @@ public class Configuration {
 		Configuration.set("disk-size", new BigInteger(disksize));
 	}
 
-	@SuppressWarnings("static-access")
-	protected static Options getOptions() {
-		if (Configuration.options == null) {
-			Options opt = new Options();
-
-			// Configuration file
-			opt.addOption("c", "config", true, "Use this configuration file");
-
-			// Connection options
-			opt.addOption("u", "username", true, "vCloud Director username");
-			opt.addOption("p", "password", true, "vCloud Director password");
-			opt.addOption("s", "server", true, "vCloud Director server URI");
-
-			// Modes
-			OptionGroup modes = new OptionGroup();
-			modes.addOption(new Option("h", "help", false, "Show help and examples"));
-			modes.addOption(new Option("v", "version", false, "Show version information"));
-			modes.addOption(new Option("l", "list", true, "List vCloud objects (org|vdc|vapp|catalog|vm)"));
-			modes.addOption(new Option("a", "add-vm", false, "Add a new VM from a vApp Template to an existing vApp"));
-			modes.addOption(new Option("r", "remove-vm", false, "Remove a VM from an existing vApp"));
-			modes.addOption(new Option("s", "poweron-vm", false, "Start an existing VM"));
-			modes.addOption(new Option("t", "poweroff-vm", false, "Stop an existing VM (hard shutdown)"));
-			modes.addOption(new Option("u", "shutdown-vm", false, "Shutdown an existing VM (soft shutdown)"));
-			modes.addOption(new Option("w", "resize-disk", false, "Resize the disk of an existing VM"));
-			modes.addOption(new Option("x", "consolidate-vm", false, "Consolidate all disks of an existing VM"));
-			modes.setRequired(true);
-			opt.addOptionGroup(modes);
-
-			// Selectors
-			opt.addOption(OptionBuilder.withLongOpt("organization").hasArg().withArgName("ORG").withDescription("Select this Organization").create());
-			opt.addOption(OptionBuilder.withLongOpt("vdc").hasArg().withArgName("VDC").withDescription("Select this Virtual Data Center").create());
-			opt.addOption(OptionBuilder.withLongOpt("vapp").hasArg().withArgName("VAPP").withDescription("Select this vApp").create());
-			opt.addOption(OptionBuilder.withLongOpt("vm").hasArg().withArgName("VM").withDescription("Select this VM").create());
-			opt.addOption(OptionBuilder.withLongOpt("catalog").hasArg().withArgName("CATALOG").withDescription("Select this Catalog").create());
-
-			// User input
-			opt.addOption(OptionBuilder.withLongOpt("fqdn").hasArg().withArgName("FQDN").withDescription("Name of object to create").create());
-			opt.addOption(OptionBuilder.withLongOpt("description").hasArg().withArgName("DESC").withDescription("Description of object to create").create());
-			opt.addOption(OptionBuilder.withLongOpt("template").hasArg().withArgName("TEMPLATE").withDescription("Template of object to create").create());
-			opt.addOption(OptionBuilder.withLongOpt("ip").hasArg().withArgName("IP").withDescription("IP of the object to create").create());
-			opt.addOption(OptionBuilder.withLongOpt("network").hasArg().withArgName("NETWORK").withDescription("Network of the object to create").create());
-
-			opt.addOption(OptionBuilder.withLongOpt("disk-name").hasArg().withArgName("DISK").withDescription("Name of disk to resize").create());
-			opt.addOption(OptionBuilder.withLongOpt("disk-size").hasArg().withArgName("SIZE").withDescription("New size of disk in MB").create());
-
-			Configuration.options = opt;
+	public static CommandLine parseCli(ConfigMode opt, String[] args) {
+		CommandLine cli = null;
+		try {
+			cli = new IgnorePosixParser(true).parse(opt, args);
+		} catch (MissingArgumentException me) {
+			Formatter.usageError(me.getLocalizedMessage(), opt);
+			System.exit(-1);
+		} catch (MissingOptionException mo) {
+			Formatter.usageError(mo.getLocalizedMessage(), opt);
+			System.exit(-1);
+		} catch (AlreadySelectedException ase) {
+			Formatter.usageError(ase.getLocalizedMessage(), opt);
+		} catch (UnrecognizedOptionException uoe) {
+			Formatter.usageError(uoe.getLocalizedMessage(), opt);
+		} catch (ParseException e) {
+			Formatter.printStackTrace(e);
+			System.exit(-1);
 		}
 
-		return Configuration.options;
+		return cli;
+	}
+
+	public static void load(ConfigMode mode, String[] args) {
+		CommandLine cli = Configuration.parseCli(mode, args);
+		Configuration.load(cli);
 	}
 
 	public static void load(CommandLine cli) {
@@ -398,6 +376,10 @@ public class Configuration {
 	}
 
 	public static String dumpToString() {
+		return Configuration.dumpToString(ConfigModes.getConsolidatedModes());
+	}
+
+	public static String dumpToString(ConfigMode mode) {
 		StringBuilder dump = new StringBuilder();
 
 		dump.append(String.format("Selected operation: %s\n", Configuration.getMode().toString()));
@@ -407,21 +389,24 @@ public class Configuration {
 
 		dump.append("Connection configuration: \n");
 		for (String in : Configuration.connection) {
-			if (Configuration.has(in)) {
+			if (Configuration.has(in) && mode.hasOption(in)) {
+				if (in.equals("password")) {
+					continue;
+				}
 				dump.append(String.format("\t %s: %s\n", in, Configuration.valueOrNull(in)));
 			}
 		}
 
 		dump.append("Selector configuration: \n");
 		for (String in : Configuration.selectors) {
-			if (Configuration.has(in)) {
+			if (Configuration.has(in) && mode.hasOption(in)) {
 				dump.append(String.format("\t %s: %s\n", in, Configuration.valueOrNull(in)));
 			}
 		}
 
 		dump.append("User input: \n");
 		for (String in : Configuration.input) {
-			if (Configuration.has(in)) {
+			if (Configuration.has(in) && mode.hasOption(in)) {
 				if (in.equals("ip")) {
 					dump.append(String.format("\t %s: %s\n", in, ((InetAddress) Configuration.valueOrNull(in)).getHostAddress()));
 				} else {
