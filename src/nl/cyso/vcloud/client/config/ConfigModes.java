@@ -31,7 +31,7 @@ public class ConfigModes {
 		ConfigParameter listmode = new ConfigParameter("l", "list", true, "TYPE", "List vCloud objects (org|vdc|vapp|catalog|vm)");
 		ConfigParameter addmode = new ConfigParameter("a", "add-vm", false, "Add a new VM from a vApp Template to an existing vApp");
 		ConfigParameter removemode = new ConfigParameter("r", "remove-vm", false, "Remove a VM from an existing vApp");
-		ConfigParameter poweronmode = new ConfigParameter("s", "poweron-vm", false, "Start an existing VM");
+		ConfigParameter poweronmode = new ConfigParameter("y", "poweron-vm", false, "Start an existing VM");
 		ConfigParameter poweroffmode = new ConfigParameter("t", "poweroff-vm", false, "Stop an existing VM (hard shutdown)");
 		ConfigParameter shutdownmode = new ConfigParameter("u", "shutdown-vm", false, "Shutdown an existing VM (soft shutdown)");
 		ConfigParameter resizediskmode = new ConfigParameter("w", "resize-disk", false, "Resize the disk of an existing VM");
