@@ -1,6 +1,5 @@
 package nl.cyso.vcloud.client;
 
-import nl.cyso.vcloud.client.config.ConfigMode;
 import nl.cyso.vcloud.client.config.ConfigModes;
 import nl.cyso.vcloud.client.config.Configuration;
 import nl.cyso.vcloud.client.types.ModeType;
@@ -15,10 +14,9 @@ public class Entry {
 
 		// Start out in ROOT ConfigMode
 		CommandLine cli = null;
-		ConfigMode opt = ConfigModes.getMode(ModeType.ROOT);
 
 		// Try to parse all ROOT cli options
-		cli = Configuration.parseCli(opt, args);
+		cli = Configuration.parseCli(ModeType.ROOT, args);
 
 		// Load the config if it was specified
 		if (cli.hasOption("config")) {
@@ -49,18 +47,17 @@ public class Entry {
 		}
 
 		if (!Configuration.hasUsername() || !Configuration.hasPassword() || !Configuration.hasServer()) {
-			Formatter.usageError("No credentials were set, or server uri was missing.", opt);
+			Formatter.usageError("No credentials were set, or server uri was missing.", ModeType.ROOT);
 		}
 
 		vCloudClient client = new vCloudClient();
 		client.login(Configuration.getServer(), Configuration.getUsername(), Configuration.getPassword());
 
 		if (Configuration.getMode() == ModeType.LIST) {
-			opt = ConfigModes.getMode(ModeType.LIST);
 			if (Configuration.getListType() == null) {
-				Formatter.usageError("Invalid list type was selected.", opt);
+				Formatter.usageError("Invalid list type was selected.", ModeType.LIST);
 			}
-			Formatter.printBorderedInfo(Configuration.dumpToString(opt));
+			Formatter.printBorderedInfo(Configuration.dumpToString(ModeType.LIST));
 
 			switch (Configuration.getListType()) {
 			case ORG:
@@ -83,17 +80,13 @@ public class Entry {
 				break;
 			}
 		} else if (Configuration.getMode() == ModeType.ADDVM) {
-			opt = ConfigModes.getMode(ModeType.ADDVM);
-
-			Configuration.load(opt, args);
-			Formatter.printBorderedInfo(Configuration.dumpToString(opt));
+			Configuration.load(ModeType.ADDVM, args);
+			Formatter.printBorderedInfo(Configuration.dumpToString(ModeType.ADDVM));
 
 			Formatter.waitForTaskCompletion(client.addVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getCatalog(), Configuration.getTemplate(), Configuration.getFqdn(), Configuration.getDescription(), Configuration.getIp().getHostAddress(), Configuration.getNetwork()));
 		} else if (Configuration.getMode() == ModeType.REMOVEVM || Configuration.getMode() == ModeType.POWERONVM || Configuration.getMode() == ModeType.POWEROFFVM || Configuration.getMode() == ModeType.SHUTDOWNVM || Configuration.getMode() == ModeType.CONSOLIDATEVM) {
-			opt = ConfigModes.getMode(Configuration.getMode());
-
-			Configuration.load(opt, args);
-			Formatter.printBorderedInfo(Configuration.dumpToString(opt));
+			Configuration.load(Configuration.getMode(), args);
+			Formatter.printBorderedInfo(Configuration.dumpToString(Configuration.getMode()));
 
 			Task t = null;
 			switch (Configuration.getMode()) {
@@ -114,15 +107,12 @@ public class Entry {
 			}
 			Formatter.waitForTaskCompletion(t);
 		} else if (Configuration.getMode() == ModeType.RESIZEDISK) {
-			opt = ConfigModes.getMode(ModeType.RESIZEDISK);
-
-			Configuration.load(opt, args);
-			Formatter.printBorderedInfo(Configuration.dumpToString(opt));
+			Configuration.load(ModeType.RESIZEDISK, args);
+			Formatter.printBorderedInfo(Configuration.dumpToString(ModeType.RESIZEDISK));
 
 			Formatter.waitForTaskCompletion(client.resizeVMDisks(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getVM(), Configuration.getDiskName(), Configuration.getDiskSize()));
 		} else {
-			opt = ConfigModes.getMode(ModeType.ROOT);
-			Formatter.usageError("No mode was selected", opt);
+			Formatter.usageError("No mode was selected", ModeType.ROOT);
 		}
 	}
 }

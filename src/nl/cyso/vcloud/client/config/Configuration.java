@@ -16,6 +16,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.commons.configuration.ConfigurationException;
@@ -269,20 +270,21 @@ public class Configuration {
 		Configuration.set("disk-size", new BigInteger(disksize));
 	}
 
-	public static CommandLine parseCli(ConfigMode opt, String[] args) {
+	public static CommandLine parseCli(ModeType mode, String[] args) {
 		CommandLine cli = null;
+		Options opt = ConfigModes.getMode(mode);
 		try {
 			cli = new IgnorePosixParser(true).parse(opt, args);
 		} catch (MissingArgumentException me) {
-			Formatter.usageError(me.getLocalizedMessage(), opt);
+			Formatter.usageError(me.getLocalizedMessage(), mode);
 			System.exit(-1);
 		} catch (MissingOptionException mo) {
-			Formatter.usageError(mo.getLocalizedMessage(), opt);
+			Formatter.usageError(mo.getLocalizedMessage(), mode);
 			System.exit(-1);
 		} catch (AlreadySelectedException ase) {
-			Formatter.usageError(ase.getLocalizedMessage(), opt);
+			Formatter.usageError(ase.getLocalizedMessage(), mode);
 		} catch (UnrecognizedOptionException uoe) {
-			Formatter.usageError(uoe.getLocalizedMessage(), opt);
+			Formatter.usageError(uoe.getLocalizedMessage(), mode);
 		} catch (ParseException e) {
 			Formatter.printStackTrace(e);
 			System.exit(-1);
@@ -291,7 +293,7 @@ public class Configuration {
 		return cli;
 	}
 
-	public static void load(ConfigMode mode, String[] args) {
+	public static void load(ModeType mode, String[] args) {
 		CommandLine cli = Configuration.parseCli(mode, args);
 		Configuration.load(cli);
 	}
@@ -377,6 +379,10 @@ public class Configuration {
 
 	public static String dumpToString() {
 		return Configuration.dumpToString(ConfigModes.getConsolidatedModes());
+	}
+
+	public static String dumpToString(ModeType mode) {
+		return Configuration.dumpToString(ConfigModes.getMode(mode));
 	}
 
 	public static String dumpToString(ConfigMode mode) {

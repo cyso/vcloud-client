@@ -2,17 +2,18 @@ package nl.cyso.vcloud.client;
 
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
+import nl.cyso.vcloud.client.config.ConfigModes;
+import nl.cyso.vcloud.client.types.ModeType;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
 
 public class Formatter {
-	public static void usageError(String error, Options opts) {
+	public static void usageError(String error, ModeType mode) {
 		Formatter.printErrorLine(error + "\n");
-		new HelpFormatter().printHelp(Version.PROJECT_NAME, opts, true);
+		ConfigModes.printConfigModeHelp(mode);
 		System.exit(-1);
 	}
 
