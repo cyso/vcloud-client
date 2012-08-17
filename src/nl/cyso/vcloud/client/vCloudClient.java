@@ -191,7 +191,7 @@ public class vCloudClient {
 
 			for (VM vm : vms) {
 				Formatter.printInfoLine(String.format("----\n%-20s - %s", vm.getReference().getName(), vm.getResource().getDescription()));
-				Formatter.printInfoLine(String.format("\tID: %s", vm.getReference().getId()));
+				Formatter.printInfoLine(String.format("\tID: %s", vm.getReference().getHref()));
 				Formatter.printInfoLine(String.format("\tCPUs: %s, RAM: %s MB", vm.getCpu().getNoOfCpus(), vm.getMemory().getMemorySize()));
 				Formatter.printInfoLine(String.format("\tOS: %s", vm.getOperatingSystemSection().getDescription().getValue()));
 
