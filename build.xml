@@ -142,4 +142,14 @@ java -jar ${executable}.jar ${root.package}.${entry.point} "$$@"</echo>
 	<target name="man-page" depends="compile" description="Generate man page">
 		<java classpath="${project.class.path}" classname="nl.cyso.vcloud.client.docs.ManPage" output="${docs.dir}/${executable}.1" />
 	</target>
+
+	<target name="package-tar" depends="dist" description="Create tarball from dist">
+		<move file="${dist.dir}" tofile="${executable}-${version}" />
+		<tar destfile="${executable}-${version}.tar.bz2" compression="bzip2">
+			<tarfileset dir="." preserveleadingslashes="false">
+				<include name="${executable}-${version}/**" />
+			</tarfileset>
+		</tar>
+		<move tofile="${dist.dir}" file="${executable}-${version}" />
+	</target>
 </project>

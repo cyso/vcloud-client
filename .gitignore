@@ -4,3 +4,4 @@ dist
 vcloud-client
 vcloud-client-debug
 doc/*.1
+*.tar.bz2
