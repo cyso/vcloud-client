@@ -1,4 +1,4 @@
-package nl.cyso.vcloud.client;
+package nl.cyso.vcloud.client.constants;
 
 public class vCloudConstants {
 	public static final String GLOBAL_SDK_LOGGER_NAME = "com.vmware.vcloud.sdk";

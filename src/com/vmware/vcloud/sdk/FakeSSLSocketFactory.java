@@ -1,4 +1,4 @@
-package nl.cyso.vcloud.client;
+package com.vmware.vcloud.sdk;
 
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;

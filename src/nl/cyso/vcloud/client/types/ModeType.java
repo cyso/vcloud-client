@@ -1,0 +1,5 @@
+package nl.cyso.vcloud.client.types;
+
+public enum ModeType {
+	ROOT, HELP, VERSION, LIST, ADDVM, REMOVEVM, POWERONVM, POWEROFFVM, SHUTDOWNVM, RESIZEDISK, CONSOLIDATEVM
+}
