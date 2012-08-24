@@ -200,7 +200,13 @@ public class vCloudClient {
 				} catch (NullPointerException ne) {
 					Formatter.printInfoLine(String.format("\tVMware Tools: No"));
 				}
-
+				try {
+					if (vm.getGuestCustomizationSection().isAdminPasswordAuto() && vm.getGuestCustomizationSection().isAdminPasswordEnabled()) {
+						Formatter.printInfoLine(String.format("\tAdministrator password: %s", vm.getGuestCustomizationSection().getAdminPassword()));
+					}
+				} catch (NullPointerException ne) {
+					Formatter.printInfoLine(String.format("\tAdministrator password: Unknown"));
+				}
 				try {
 					Formatter.printInfoLine(String.format("\tConsole Link: http://vcloud.localhost/console.html?%s", vm.acquireTicket().getValue()));
 				} catch (VCloudException e) {
@@ -515,6 +521,8 @@ public class vCloudClient {
 		GuestCustomizationSectionType guest = new GuestCustomizationSectionType();
 		guest.setInfo(new MsgType());
 		guest.setComputerName(fqdnParts[0]);
+		guest.setAdminPasswordAuto(true);
+		guest.setAdminPasswordEnabled(true);
 		guest.setEnabled(true);
 		sections.add(new ObjectFactory().createGuestCustomizationSection(guest));
 
