@@ -33,7 +33,7 @@ public class ConfigModes {
 		ConfigParameter removemode = new ConfigParameter("r", "remove-vm", false, "Remove a VM from an existing vApp");
 		ConfigParameter poweronmode = new ConfigParameter("y", "poweron-vm", false, "Start an existing VM");
 		ConfigParameter poweroffmode = new ConfigParameter("t", "poweroff-vm", false, "Stop an existing VM (hard shutdown)");
-		ConfigParameter shutdownmode = new ConfigParameter("u", "shutdown-vm", false, "Shutdown an existing VM (soft shutdown)");
+		ConfigParameter shutdownmode = new ConfigParameter("z", "shutdown-vm", false, "Shutdown an existing VM (soft shutdown)");
 		ConfigParameter resizediskmode = new ConfigParameter("w", "resize-disk", false, "Resize the disk of an existing VM");
 		ConfigParameter consolidatemode = new ConfigParameter("x", "consolidate-vm", false, "Consolidate all disks of an existing VM");
 
