@@ -33,7 +33,7 @@ import com.vmware.vcloud.api.rest.schema.ovf.SectionType;
 import com.vmware.vcloud.sdk.Catalog;
 import com.vmware.vcloud.sdk.CatalogItem;
 import com.vmware.vcloud.sdk.FakeSSLSocketFactory;
-import com.vmware.vcloud.sdk.OrgNetwork;
+import com.vmware.vcloud.sdk.OrgVdcNetwork;
 import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -125,7 +125,7 @@ public class vCloudClient {
 				Formatter.printInfoLine(String.format("%-20s - %s", vdcRef.getName(), vdc.getResource().getDescription()));
 
 				for (ReferenceType netRef : vdc.getAvailableNetworkRefs()) {
-					OrgNetwork net = OrgNetwork.getOrgNetworkByReference(this.vcc, netRef);
+					OrgVdcNetwork net = OrgVdcNetwork.getOrgVdcNetworkByReference(this.vcc, netRef);
 
 					StringBuilder i = new StringBuilder();
 					try {
