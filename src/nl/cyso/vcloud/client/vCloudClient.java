@@ -218,6 +218,8 @@ public class vCloudClient {
 					Formatter.printInfoLine(String.format("\tDisk Chain Length: %s %s", String.valueOf(length), (length == 0 ? "" : length == 1 ? "(Flat)" : "(Chained)")));
 				} catch (NullPointerException ne) {
 					Formatter.printInfoLine(String.format("\tDisk Chain Length: Unknown"));
+				} catch (VCloudException ve) {
+					Formatter.printInfoLine(String.format("\tDisk Chain Length: Unknown"));
 				}
 
 				Formatter.printInfoLine("\tDisks:");
@@ -542,6 +544,53 @@ public class vCloudClient {
 		} catch (VCloudException e) {
 			Formatter.printErrorLine("An error occured while recomposing vApp");
 			Formatter.printErrorLine(e.getLocalizedMessage());
+			System.exit(1);
+		}
+
+		return t;
+	}
+
+	public Task setGuestCustomizations(String org, String vdc, String vapp, String vm, boolean genPassword) {
+		return this.setGuestCustomizations(org, vdc, vapp, vm, genPassword, null);
+	}
+
+	public Task setGuestCustomizations(String org, String vdc, String vapp, String vm, boolean genPassword, String password) {
+		this.vccPreCheck();
+		VM vmObj = this.getVM(org, vdc, vapp, vm);
+
+		Formatter.printInfoLine("Retrieving Guest Customizations section for " + vm);
+
+		GuestCustomizationSectionType guest = null;
+		try {
+			guest = vmObj.getGuestCustomizationSection();
+		} catch (VCloudException ve) {
+			Formatter.printErrorLine("An error occurred while getting guest customizations");
+			Formatter.printErrorLine(ve.getLocalizedMessage());
+			System.exit(1);
+		}
+
+		if (genPassword == true) {
+			guest.setEnabled(true);
+			guest.setAdminPasswordAuto(true);
+			guest.setAdminPasswordEnabled(true);
+		} else if (password != null) {
+			guest.setEnabled(true);
+			guest.setAdminPasswordAuto(false);
+			guest.setAdminPasswordEnabled(true);
+			guest.setAdminPassword(password);
+		} else {
+			guest.setAdminPasswordEnabled(false);
+		}
+
+		Formatter.printInfoLine("Updating Guest Customizations");
+
+		// Do it
+		Task t = null;
+		try {
+			t = vmObj.updateSection(guest);
+		} catch (VCloudException ve) {
+			Formatter.printErrorLine("An error occurred while updating guest customizations");
+			Formatter.printErrorLine(ve.getLocalizedMessage());
 			System.exit(1);
 		}
 
