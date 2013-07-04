@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2013 Cyso < development [at] cyso . nl >
+ *
+ * This file is part of vcloud-client.
+ *
+ * vcloud-client is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * vcloud-client is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with vcloud-client. If not, see <http://www.gnu.org/licenses/>.
+ */
 package nl.cyso.vcloud.client;
 
 import nl.cyso.vcloud.client.config.ConfigModes;
@@ -84,6 +102,7 @@ public class Entry {
 			Formatter.printBorderedInfo(Configuration.dumpToString(ModeType.ADDVM));
 
 			Formatter.waitForTaskCompletion(client.addVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getCatalog(), Configuration.getTemplate(), Configuration.getFqdn(), Configuration.getDescription(), Configuration.getIp().getHostAddress(), Configuration.getNetwork()));
+			Formatter.waitForTaskCompletion(client.setGuestCustomizations(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getFqdn(), true));
 		} else if (Configuration.getMode() == ModeType.REMOVEVM || Configuration.getMode() == ModeType.POWERONVM || Configuration.getMode() == ModeType.POWEROFFVM || Configuration.getMode() == ModeType.SHUTDOWNVM || Configuration.getMode() == ModeType.CONSOLIDATEVM) {
 			Configuration.load(Configuration.getMode(), args);
 			Formatter.printBorderedInfo(Configuration.dumpToString(Configuration.getMode()));

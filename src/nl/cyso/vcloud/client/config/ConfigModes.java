@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2013 Cyso < development [at] cyso . nl >
+ *
+ * This file is part of vcloud-client.
+ *
+ * vcloud-client is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * vcloud-client is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with vcloud-client. If not, see <http://www.gnu.org/licenses/>.
+ */
 package nl.cyso.vcloud.client.config;
 
 import java.util.HashMap;
@@ -33,7 +51,7 @@ public class ConfigModes {
 		ConfigParameter removemode = new ConfigParameter("r", "remove-vm", false, "Remove a VM from an existing vApp");
 		ConfigParameter poweronmode = new ConfigParameter("y", "poweron-vm", false, "Start an existing VM");
 		ConfigParameter poweroffmode = new ConfigParameter("t", "poweroff-vm", false, "Stop an existing VM (hard shutdown)");
-		ConfigParameter shutdownmode = new ConfigParameter("u", "shutdown-vm", false, "Shutdown an existing VM (soft shutdown)");
+		ConfigParameter shutdownmode = new ConfigParameter("z", "shutdown-vm", false, "Shutdown an existing VM (soft shutdown)");
 		ConfigParameter resizediskmode = new ConfigParameter("w", "resize-disk", false, "Resize the disk of an existing VM");
 		ConfigParameter consolidatemode = new ConfigParameter("x", "consolidate-vm", false, "Consolidate all disks of an existing VM");
 

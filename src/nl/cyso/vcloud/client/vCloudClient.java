@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2013 Cyso < development [at] cyso . nl >
+ *
+ * This file is part of vcloud-client.
+ *
+ * vcloud-client is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * vcloud-client is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with vcloud-client. If not, see <http://www.gnu.org/licenses/>.
+ */
 package nl.cyso.vcloud.client;
 
 import java.math.BigInteger;
@@ -33,7 +51,7 @@ import com.vmware.vcloud.api.rest.schema.ovf.SectionType;
 import com.vmware.vcloud.sdk.Catalog;
 import com.vmware.vcloud.sdk.CatalogItem;
 import com.vmware.vcloud.sdk.FakeSSLSocketFactory;
-import com.vmware.vcloud.sdk.OrgNetwork;
+import com.vmware.vcloud.sdk.OrgVdcNetwork;
 import com.vmware.vcloud.sdk.Organization;
 import com.vmware.vcloud.sdk.Task;
 import com.vmware.vcloud.sdk.VCloudException;
@@ -125,7 +143,7 @@ public class vCloudClient {
 				Formatter.printInfoLine(String.format("%-20s - %s", vdcRef.getName(), vdc.getResource().getDescription()));
 
 				for (ReferenceType netRef : vdc.getAvailableNetworkRefs()) {
-					OrgNetwork net = OrgNetwork.getOrgNetworkByReference(this.vcc, netRef);
+					OrgVdcNetwork net = OrgVdcNetwork.getOrgVdcNetworkByReference(this.vcc, netRef);
 
 					StringBuilder i = new StringBuilder();
 					try {
@@ -200,7 +218,13 @@ public class vCloudClient {
 				} catch (NullPointerException ne) {
 					Formatter.printInfoLine(String.format("\tVMware Tools: No"));
 				}
-
+				try {
+					if (vm.getGuestCustomizationSection().isAdminPasswordAuto() && vm.getGuestCustomizationSection().isAdminPasswordEnabled()) {
+						Formatter.printInfoLine(String.format("\tAdministrator password: %s", vm.getGuestCustomizationSection().getAdminPassword()));
+					}
+				} catch (NullPointerException ne) {
+					Formatter.printInfoLine(String.format("\tAdministrator password: Unknown"));
+				}
 				try {
 					Formatter.printInfoLine(String.format("\tConsole Link: http://vcloud.localhost/console.html?%s", vm.acquireTicket().getValue()));
 				} catch (VCloudException e) {
@@ -211,6 +235,8 @@ public class vCloudClient {
 					int length = vm.getVMDiskChainLength();
 					Formatter.printInfoLine(String.format("\tDisk Chain Length: %s %s", String.valueOf(length), (length == 0 ? "" : length == 1 ? "(Flat)" : "(Chained)")));
 				} catch (NullPointerException ne) {
+					Formatter.printInfoLine(String.format("\tDisk Chain Length: Unknown"));
+				} catch (VCloudException ve) {
 					Formatter.printInfoLine(String.format("\tDisk Chain Length: Unknown"));
 				}
 
@@ -515,6 +541,8 @@ public class vCloudClient {
 		GuestCustomizationSectionType guest = new GuestCustomizationSectionType();
 		guest.setInfo(new MsgType());
 		guest.setComputerName(fqdnParts[0]);
+		guest.setAdminPasswordAuto(true);
+		guest.setAdminPasswordEnabled(true);
 		guest.setEnabled(true);
 		sections.add(new ObjectFactory().createGuestCustomizationSection(guest));
 
@@ -534,6 +562,53 @@ public class vCloudClient {
 		} catch (VCloudException e) {
 			Formatter.printErrorLine("An error occured while recomposing vApp");
 			Formatter.printErrorLine(e.getLocalizedMessage());
+			System.exit(1);
+		}
+
+		return t;
+	}
+
+	public Task setGuestCustomizations(String org, String vdc, String vapp, String vm, boolean genPassword) {
+		return this.setGuestCustomizations(org, vdc, vapp, vm, genPassword, null);
+	}
+
+	public Task setGuestCustomizations(String org, String vdc, String vapp, String vm, boolean genPassword, String password) {
+		this.vccPreCheck();
+		VM vmObj = this.getVM(org, vdc, vapp, vm);
+
+		Formatter.printInfoLine("Retrieving Guest Customizations section for " + vm);
+
+		GuestCustomizationSectionType guest = null;
+		try {
+			guest = vmObj.getGuestCustomizationSection();
+		} catch (VCloudException ve) {
+			Formatter.printErrorLine("An error occurred while getting guest customizations");
+			Formatter.printErrorLine(ve.getLocalizedMessage());
+			System.exit(1);
+		}
+
+		if (genPassword == true) {
+			guest.setEnabled(true);
+			guest.setAdminPasswordAuto(true);
+			guest.setAdminPasswordEnabled(true);
+		} else if (password != null) {
+			guest.setEnabled(true);
+			guest.setAdminPasswordAuto(false);
+			guest.setAdminPasswordEnabled(true);
+			guest.setAdminPassword(password);
+		} else {
+			guest.setAdminPasswordEnabled(false);
+		}
+
+		Formatter.printInfoLine("Updating Guest Customizations");
+
+		// Do it
+		Task t = null;
+		try {
+			t = vmObj.updateSection(guest);
+		} catch (VCloudException ve) {
+			Formatter.printErrorLine("An error occurred while updating guest customizations");
+			Formatter.printErrorLine(ve.getLocalizedMessage());
 			System.exit(1);
 		}
 

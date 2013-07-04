@@ -1,4 +1,24 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
+<!--
+
+ Copyright (c) 2013 Cyso < development [at] cyso . nl >
+
+ This file is part of vcloud-client.
+
+ vcloud-client is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ vcloud-client is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with vcloud-client. If not, see <http://www.gnu.org/licenses/>.
+
+-->
 <project name="vcloud-client" basedir="." default="dist"> 
 
 	<!-- Set up properties containing important project directories --> 
@@ -96,7 +116,7 @@ java -Xdebug -Xrunjdwp:transport=dt_socket,address=8998,server=y -classpath ${pr
 	</target>
 	
 	<!-- Create a clean dist directory -->
-	<target name="dist" depends="executable,man-page" description="Create a clean dist directory">
+	<target name="dist" depends="executable,man-page,readme" description="Create a clean dist directory">
 		<delete dir="${dist.dir}"/>
 		<mkdir dir="${dist.dir}"/>
 		<mkdir dir="${dist.dir}/${docs.dir}"/>
@@ -113,6 +133,7 @@ java -Xdebug -Xrunjdwp:transport=dt_socket,address=8998,server=y -classpath ${pr
 		</copy>
 
 		<copy file="${docs.dir}/${executable}.1" tofile="${dist.dir}/${docs.dir}/${executable}.1" />
+		<copy file="README.md" tofile="${dist.dir}/README.md" />
 
 		<jar destfile="${dist.dir}/${executable}.jar" basedir="${class.root}">
 			<manifest>
@@ -127,7 +148,8 @@ java -Xdebug -Xrunjdwp:transport=dt_socket,address=8998,server=y -classpath ${pr
 		</jar>
 
 		<echo file="${dist.dir}/${executable}" append="false">#!/bin/sh
-java -jar ${executable}.jar ${root.package}.${entry.point} "$$@"</echo>
+DIR="$( cd "$( dirname "$0" )" &amp;&amp; pwd )"
+java -jar $DIR/${executable}.jar ${root.package}.${entry.point} "$$@"</echo>
 		
 		<chmod file="${dist.dir}/${executable}" perm="a+x"/>
 	</target>
@@ -141,6 +163,10 @@ java -jar ${executable}.jar ${root.package}.${entry.point} "$$@"</echo>
 
 	<target name="man-page" depends="compile" description="Generate man page">
 		<java classpath="${project.class.path}" classname="nl.cyso.vcloud.client.docs.ManPage" output="${docs.dir}/${executable}.1" />
+	</target>
+
+	<target name="readme" depends="compile" description="Generate README">
+		<java classpath="${project.class.path}" classname="nl.cyso.vcloud.client.docs.Readme" output="README.md" />
 	</target>
 
 	<target name="package-tar" depends="dist" description="Create tarball from dist">

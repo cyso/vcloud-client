@@ -21,10 +21,7 @@ package nl.cyso.vcloud.client.docs;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import nl.cyso.vcloud.client.Version;
@@ -34,23 +31,22 @@ import nl.cyso.vcloud.client.config.ConfigParameter;
 import nl.cyso.vcloud.client.types.ModeType;
 
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.lang.StringUtils;
 
-public class ManPage {
-	private String getHeaderSection() {
-		DateFormat df = new SimpleDateFormat("dd MMM yyyy");
-		return String.format(".TH %s %d \"%s\" \"%s-%s\" \"%s\"\n", Version.PROJECT_NAME, 1, df.format(new Date()), Version.RELEASE_VERSION, Version.BUILD_VERSION, "");
-	}
+public class Readme {
 
 	private String getNameSection() {
 		StringBuilder section = new StringBuilder();
-		section.append(".SH NAME\n");
-		section.append(String.format("%s - a tool to manage vCloud datacenter objects\n", Version.PROJECT_NAME));
+		String header = String.format("%s - a tool to manage vCloud datacenter objects\n", Version.PROJECT_NAME);
+		section.append(header);
+		section.append(StringUtils.repeat("-", header.length()) + "\n\n");
 		return section.toString();
 	}
 
 	private String getSynopsisSection() {
 		StringBuilder section = new StringBuilder();
-		section.append(".SH SYNOPSIS\n");
+		section.append("SYNOPSIS\n");
+		section.append("--------\n");
 
 		HelpFormatter help = new HelpFormatter();
 		help.setSyntaxPrefix("");
@@ -59,45 +55,45 @@ public class ManPage {
 		PrintWriter pw = new PrintWriter(str);
 
 		help.printUsage(pw, 1000, Version.PROJECT_NAME, ConfigModes.getMode(ModeType.ROOT));
-		section.append(str.toString() + "\n");
+		section.append("\t\n\t" + str.toString() + "\n");
 
 		for (ModeType m : ModeType.values()) {
 			if (m == ModeType.ROOT) {
 				continue;
 			}
-			section.append(String.format(".B %s\n", m.toString()));
 			str = new StringWriter();
 			pw = new PrintWriter(str);
 			help.printUsage(pw, 1000, Version.PROJECT_NAME, ConfigModes.getMode(m));
-			section.append(".RS 4\n");
-			section.append(str.toString() + "\n");
-			section.append(".RE\n");
+			section.append(String.format("**%s**\n\n", m.toString()));
+			section.append("\t" + str.toString() + "\n");
 		}
-		return section.toString().replace("-", "\\-");
+		return section.toString();
 	}
 
 	private String getDescriptionSection() {
 		StringBuilder section = new StringBuilder();
-		section.append(".SH DESCRIPTION\n");
-		section.append(String.format(".B %s\n", Version.PROJECT_NAME));
+		section.append(String.format("**%s** ", Version.PROJECT_NAME));
 		section.append("is a tool to manage objects in vCloud Director, using the vCloud API.\n\n");
 		section.append("There are several modes of operation, all of which can be found in the synopsis below. ");
 		section.append("Each mode has a different set of required and optional arguments, which can also be found in the synopsis. ");
-		section.append("Help mode can be used in a context sensitive manner. For example, \n");
-		section.append(".I \\-h\n");
-		section.append("will show all the modes, and \n");
-		section.append(".I \\-h ADDVM\n");
+		section.append("Help mode can be used in a context sensitive manner. For example, ");
+		section.append("*-h*");
+		section.append("will show all the modes, and ");
+		section.append("*-h ADDVM*");
 		section.append("will show help about the ADDVM mode.\n\n");
-		section.append("All commands require proper authentication. This can be provided on the command line by using\n");
-		section.append(".I \\-u \\-p \\-s\n");
-		section.append("or by creating a configuration file and specifying it with\n");
-		section.append(".I \\-c config-file\n");
+		section.append("All commands require proper authentication. This can be provided on the command line by using ");
+		section.append("*-u -p -s* ");
+		section.append("or by creating a configuration file and specifying it with ");
+		section.append("*-c config-file*\n");
+		section.append(String.format("**%s** is licensed under the GPLv3 license. For more information, see the *LICENSE* file.\n", Version.PROJECT_NAME));
+		section.append(String.format("This project uses libraries and routines which may have a different license. Refer to the included licenses in the source files and/or JAR files for more information.\n\n"));
 		return section.toString();
 	}
 
 	private String getOptionsSection() {
 		StringBuilder section = new StringBuilder();
-		section.append(".SH OPTIONS\n");
+		section.append("OPTIONS\n");
+		section.append("-------\n");
 
 		List<ConfigParameter> options = ConfigModes.getConsolidatedModes().getAllOptions();
 		Collections.sort(options, ConfigModeSorter.CONFIGPARAMETER_ALPHANUM);
@@ -108,18 +104,17 @@ public class ManPage {
 			}
 			ConfigParameter o = (ConfigParameter) opt;
 			if (o.getOpt() != null) {
-				section.append(String.format(".B \\-%s\n", o.getOpt()));
+				section.append(String.format("**-%s** ", o.getOpt()));
 			}
 			if (o.getLongOpt() != null) {
-				section.append(String.format(".B \\-\\-%s\n", o.getLongOpt()));
+				section.append(String.format("**--%s** ", o.getLongOpt()));
 			}
 			if (o.hasArgName()) {
-				section.append(String.format(".I %s\n", o.getArgName()));
+				section.append(String.format("*%s* ", o.getArgName()));
 			}
 			if (o.getDescription() != null) {
-				section.append(".RS 4\n");
+				section.append("\n\n");
 				section.append(o.getDescription() + "\n");
-				section.append(".RE\n");
 			}
 			section.append("\n");
 		}
@@ -129,57 +124,64 @@ public class ManPage {
 
 	private String getConfigurationSection() {
 		StringBuilder section = new StringBuilder();
-		section.append(".SH CONFIGURATION\n");
+		section.append("CONFIGURATION\n");
+		section.append("-------------\n");
 		section.append("All command line parameters can optionally be provided using a configuration file. Exception on this are the mode selectors. ");
 		section.append("The configuration file uses a simple format, which is:\n\n");
-		section.append(".RS 4\n");
-		section.append(".I option\n");
-		section.append("=\n");
-		section.append(".I value\n\n");
-		section.append(".RE\n");
-		section.append(".I option\n");
+		section.append("\toption");
+		section.append("=");
+		section.append("value\n\n");
+		section.append("*option* ");
 		section.append("is the same as the long options which can be specified on the command line. For example, this is a valid configuration line:\n\n");
-		section.append(".RS 4\n");
-		section.append("username=user@Organization\n\n");
-		section.append(".RE\n");
+		section.append("\tusername=user@Organization\n\n");
 		section.append("Configuration options are parsed in the following order: \n\n");
-		section.append(".IP 1 4");
-		section.append("The\n");
-		section.append(".I \\-c\n");
+		section.append("1. The ");
+		section.append("*-c* ");
 		section.append("option.\n");
-		section.append(".IP 2 4\n");
-		section.append("All options provided on the command line, in the order they are specified.\n");
-		section.append(".RE\n\n");
+		section.append("2. All options provided on the command line, in the order they are specified.\n");
 		section.append("It is possible to override already specified configuration options by specifying them again. Duplicate options will take ");
-		section.append("the value of the last one specified. An example configuration file can be found in the distribution package.\n");
+		section.append("the value of the last one specified. An example configuration file can be found in the distribution package.\n\n");
 		return section.toString();
 	}
 
 	private String getBugsSection() {
 		StringBuilder section = new StringBuilder();
-		section.append(".SH BUGS\n");
-		section.append("No major known bugs exist at this time.\n");
+		section.append("BUGS\n");
+		section.append("----\n");
+		section.append("No major known bugs exist at this time.\n\n");
 		return section.toString();
 	}
 
 	private String getAuthorsSection() {
 		StringBuilder section = new StringBuilder();
-		section.append(".SH AUTHOR\n");
-		section.append(".MT n.douma@nekoconeko.nl\n");
-		section.append("Nick Douma\n");
-		section.append(".ME\n");
+		section.append("AUTHOR\n");
+		section.append("------\n");
+		section.append("Nick Douma (n.douma@nekoconeko.nl)\n\n");
+		return section.toString();
+	}
+
+	private String getBuildSection() {
+		StringBuilder section = new StringBuilder();
+		section.append("BUILDING\n");
+		section.append("--------\n");
+		section.append(String.format("Building **%s** requires the following:\n\n", Version.PROJECT_NAME));
+		section.append("1. Oracle Java or OpenJDK >= 6\n");
+		section.append("2. Apache Ant >= 1.8\n\n");
+		section.append(String.format("Then you can simply call `ant dist` to create a *dist* folder with everything %s needs to run. ", Version.PROJECT_NAME));
+		section.append("You can also use `ant package-tar` to create a tarball\n\n");
+
 		return section.toString();
 	}
 
 	public static void main(String[] args) {
-		ManPage m = new ManPage();
-		System.out.print(m.getHeaderSection());
-		System.out.print(m.getNameSection());
-		System.out.print(m.getDescriptionSection());
-		System.out.print(m.getSynopsisSection());
-		System.out.print(m.getOptionsSection());
-		System.out.print(m.getConfigurationSection());
-		System.out.print(m.getBugsSection());
-		System.out.print(m.getAuthorsSection());
+		Readme r = new Readme();
+		System.out.print(r.getNameSection());
+		System.out.print(r.getDescriptionSection());
+		System.out.print(r.getBuildSection());
+		System.out.print(r.getSynopsisSection());
+		System.out.print(r.getOptionsSection());
+		System.out.print(r.getConfigurationSection());
+		System.out.print(r.getBugsSection());
+		System.out.print(r.getAuthorsSection());
 	}
 }
