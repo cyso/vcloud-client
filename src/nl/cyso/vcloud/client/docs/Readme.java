@@ -77,14 +77,14 @@ public class Readme {
 		section.append("There are several modes of operation, all of which can be found in the synopsis below. ");
 		section.append("Each mode has a different set of required and optional arguments, which can also be found in the synopsis. ");
 		section.append("Help mode can be used in a context sensitive manner. For example, ");
-		section.append("*-h*");
+		section.append("*-h* ");
 		section.append("will show all the modes, and ");
-		section.append("*-h ADDVM*");
+		section.append("*-h ADDVM* ");
 		section.append("will show help about the ADDVM mode.\n\n");
 		section.append("All commands require proper authentication. This can be provided on the command line by using ");
 		section.append("*-u -p -s* ");
 		section.append("or by creating a configuration file and specifying it with ");
-		section.append("*-c config-file*\n");
+		section.append("*-c config-file*.\n\n");
 		section.append(String.format("**%s** is licensed under the GPLv3 license. For more information, see the *LICENSE* file.\n", Version.PROJECT_NAME));
 		section.append(String.format("This project uses libraries and routines which may have a different license. Refer to the included licenses in the source files and/or JAR files for more information.\n\n"));
 		return section.toString();

@@ -3,9 +3,10 @@ vcloud-client - a tool to manage vCloud datacenter objects
 
 **vcloud-client** is a tool to manage objects in vCloud Director, using the vCloud API.
 
-There are several modes of operation, all of which can be found in the synopsis below. Each mode has a different set of required and optional arguments, which can also be found in the synopsis. Help mode can be used in a context sensitive manner. For example, *-h*will show all the modes, and *-h ADDVM*will show help about the ADDVM mode.
+There are several modes of operation, all of which can be found in the synopsis below. Each mode has a different set of required and optional arguments, which can also be found in the synopsis. Help mode can be used in a context sensitive manner. For example, *-h* will show all the modes, and *-h ADDVM* will show help about the ADDVM mode.
 
-All commands require proper authentication. This can be provided on the command line by using *-u -p -s* or by creating a configuration file and specifying it with *-c config-file*
+All commands require proper authentication. This can be provided on the command line by using *-u -p -s* or by creating a configuration file and specifying it with *-c config-file*.
+
 **vcloud-client** is licensed under the GPLv3 license. For more information, see the *LICENSE* file.
 This project uses libraries and routines which may have a different license. Refer to the included licenses in the source files and/or JAR files for more information.
 
