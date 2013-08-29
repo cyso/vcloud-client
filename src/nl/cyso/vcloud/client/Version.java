@@ -26,9 +26,9 @@ public final class Version {
 	/**
 	 * Official release version of vcloud-login
 	 */
-	public static final String RELEASE_VERSION = "0.4";
+	public static final String RELEASE_VERSION = "0.4.1";
 	/**
 	 * Actual Git revision according to `git describe` during bumping
 	 */
-	public static final String BUILD_VERSION = "3b53896";
+	public static final String BUILD_VERSION = "5555992";
 }
