@@ -1,7 +1,21 @@
-bin
-classes
-dist
-vcloud-client
-vcloud-client-debug
-doc/*.1
-*.tar.bz2
+## Working directories
+/bin
+/classes
+/dist
+
+## Config files
+/*.config
+
+## Ant generated files
+/vcloud-client*
+/doc/*.1
+/*.tar.bz2
+
+## Debian build files
+/debian/vcloud-client.*
+/debian/files
+/debian/tmp
+/debian/*.log
+/debian/*.substvars
+/debian/vcloud-client
+/debian/*.README.*

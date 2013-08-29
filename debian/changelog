@@ -1,0 +1,86 @@
+vcloud-client (0.4) precise; urgency=low
+
+  * Fix duplicate usage of -u
+  * Reset administrator password by default
+  * Make dist vcloud-login script callable from other directories
+  * Update vCloud SDK from 1.5 to 5.1
+  * Add seperate setGuestCustomizations method
+  * Change deprecated OrgNetwork references to OrgVdcNetwork
+  * Add README.md generator
+  * Attach LICENSE to all files
+  * Add README
+  * Bump version
+
+ -- Nick Douma <n.douma@nekoconeko.nl>  Thu,  4 Jul 2013 13:33:37 +0200
+
+vcloud-client (0.3) precise; urgency=low
+
+  * Add powerOnVM, powerOffVM and shutdownVM actions
+  * Add handling of unrecognized options
+  * Add resizeDisk operation
+  * Add consolidateVM action
+  * Add disk chain length to VM list
+  * Move constants and types to seperate package
+  * Move FakeSSLSocketFactory to seperate package
+  * Move all print related functions to Formatter
+  * Unseal JAR
+  * Change all direct calls to System.{out,err} to Formatter
+  * Print header and configuration on execution
+  * Add more information logging to all operations
+  * Handle possible unset IP address on VM
+  * Use Formatter to print stack traces
+  * Fix retrieval of VM id
+  * Actually enable Guest Customizations
+  * Move Configuration to seperate config package
+  * Add setting of Help mode
+  * Move entire Configuration dependency building to new Config* classes
+  * Refactor Configuration and Entry to use new Config* logic.
+  * Refactor code to remove all knowledge of Options and ConfigModes from Entry
+  * Fix duplicate usage of -s
+  * Add man page generator class.
+  * Add man-page target to Ant build file, and add it to dist target.
+  * Add packaging target to Ant build file
+  * Bump version to 0.3
+
+ -- Nick Douma <n.douma@nekoconeko.nl>  Tue, 21 Aug 2012 14:01:32 +0200
+
+vcloud-client (0.2) precise; urgency=low
+
+  * Make modes required and mutually exclusive
+  * Rename recomposeVApp to addVM
+  * Fix invalid error 255 on successful tasks
+  * Move CLI Options building to Configuration
+  * Add examples to usage information
+  * Set PROJECT_NAME to proper name
+  * Fix wrong variable being checked for hasIp, and add return after failed loading of config file
+  * Bump version to 0.2
+
+ -- Nick Douma <n.douma@nekoconeko.nl>  Wed,  8 Aug 2012 10:13:16 +0200
+
+vcloud-client (0.1) precise; urgency=low
+
+  * Add code auto-formatters
+  * Add vCloudClient
+  * Add various List and Get functions
+  * Add Catalog lister
+  * Add handling of missing arguments
+  * Add Ant build script
+  * Add recomposeVApp
+  * Add listing of networks for vDC and vApp
+  * Removed vAppTemplate list mode
+  * Remove unused recomposeVApp variables
+  * Add VM List and VMRC console connector
+  * Fix issue with absolute paths (again)
+  * Add generation of -debug executable
+  * Add extra error messages where appropriate
+  * Refactor code to use a Configuration object
+  * Add option to load configuration from file
+  * Ant dist target now properly build a jar file and includes an example config
+  * Add missing VDC list mode to example config
+  * Add version information to client and version bumping to Ant build file
+  * Make loadFile protected for consistency
+  * Add waiting for completion of recomposeVApp
+  * Add Remove VM mode
+  * Bump version
+
+ -- Nick Douma <n.douma@nekoconeko.nl>  Tue,  7 Aug 2012 16:10:00 +0200
