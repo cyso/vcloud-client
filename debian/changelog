@@ -1,3 +1,11 @@
+vcloud-client (0.4.1) precise; urgency=low
+
+  * Fix minor visual issues with README
+  * Add debian packaging stuff
+  * Bump version, update changelog
+
+ -- Nick Douma <n.douma@nekoconeko.nl>  Thu, 29 Aug 2013 15:06:37 +0200
+
 vcloud-client (0.4) precise; urgency=low
 
   * Fix duplicate usage of -u
