@@ -524,7 +524,7 @@ public class vCloudClient {
 		NetworkConnectionType nw = new NetworkConnectionType();
 		nw.setIpAddress(ip);
 		nw.setMACAddress(null);
-		nw.setIpAddressAllocationMode("MANUAL");
+		nw.setIpAddressAllocationMode("DHCP");
 		nw.setNetwork(network);
 		nw.setIsConnected(true);
 
@@ -541,8 +541,8 @@ public class vCloudClient {
 		GuestCustomizationSectionType guest = new GuestCustomizationSectionType();
 		guest.setInfo(new MsgType());
 		guest.setComputerName(fqdnParts[0]);
-		guest.setAdminPasswordAuto(true);
-		guest.setAdminPasswordEnabled(true);
+		guest.setAdminPasswordAuto(false);
+		guest.setAdminPasswordEnabled(false);
 		guest.setEnabled(true);
 		sections.add(new ObjectFactory().createGuestCustomizationSection(guest));
 

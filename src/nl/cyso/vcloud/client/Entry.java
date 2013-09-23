@@ -102,7 +102,7 @@ public class Entry {
 			Formatter.printBorderedInfo(Configuration.dumpToString(ModeType.ADDVM));
 
 			Formatter.waitForTaskCompletion(client.addVM(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getCatalog(), Configuration.getTemplate(), Configuration.getFqdn(), Configuration.getDescription(), Configuration.getIp().getHostAddress(), Configuration.getNetwork()));
-			Formatter.waitForTaskCompletion(client.setGuestCustomizations(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getFqdn(), true));
+			Formatter.waitForTaskCompletion(client.setGuestCustomizations(Configuration.getOrganization(), Configuration.getVDC(), Configuration.getVApp(), Configuration.getFqdn(), false));
 		} else if (Configuration.getMode() == ModeType.REMOVEVM || Configuration.getMode() == ModeType.POWERONVM || Configuration.getMode() == ModeType.POWEROFFVM || Configuration.getMode() == ModeType.SHUTDOWNVM || Configuration.getMode() == ModeType.CONSOLIDATEVM) {
 			Configuration.load(Configuration.getMode(), args);
 			Formatter.printBorderedInfo(Configuration.dumpToString(Configuration.getMode()));
