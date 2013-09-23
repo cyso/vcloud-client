@@ -524,7 +524,7 @@ public class vCloudClient {
 		NetworkConnectionType nw = new NetworkConnectionType();
 		nw.setIpAddress(ip);
 		nw.setMACAddress(null);
-		nw.setIpAddressAllocationMode("MANUAL");
+		nw.setIpAddressAllocationMode("DHCP");
 		nw.setNetwork(network);
 		nw.setIsConnected(true);
 
